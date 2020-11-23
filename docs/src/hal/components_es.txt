@@ -1,312 +1,348 @@
-:lang: es
+[[cha:hal-components]]
 
-[[cha:componentes-hal]]
+= HAL Components
 
-= Componentes HAL
+== Commands and Userspace Components
 
-== Comandos y componentes de espacio de usuario
-
-Todos los comandos en la siguiente lista tienen páginas de manual.
-Algunos tendrán descripciones ampliadas y otros, limitadas.
-Con estas listas se sabe qué componentes existen. Usar 'man n nombre' para obtener información adicional.
-Para ver la información en la página de manual, por ejemplo de Axis, escriba en una ventana de terminal:
+All of the commands in the following list have man pages. 
+Some will have expanded descriptions, some will have limited descriptions. 
+Also, all of the components listed below have man pages.
+From these two lists you know what components exist, 
+and you can use 'man n name' to get additional information. 
+To view the information in the man page, in a terminal window type: 
 
 ----
-man axis (o tal vez 'man 1 axis' si su sistema lo requiere) 
+man axis (or perhaps 'man 1 axis' if your system requires it.)
 ----
 
-axis:: Interfaz gráfica de usuario AXIS para LinuxCNC (The Enhanced Machine Controller) 
-axis-remote:: Interface AXIS Remote.
-comp:: Construye, compila e instala componentes HAL de LinuxCNC.
-gladevcp:: Panel de control virtual para LinuxCNC basado en widgets Glade, Gtk y HAL.
-gs2:: Componente HAL de espacio de usuario para VDF Automation Direct GS2.
-halcmd:: Manipula HAL del controlador de máquina mejorado desde la línea de comandos.
-hal_input:: Controlar los pines HAL con cualquier dispositivo de entrada de Linux, incluidos los dispositivos USB HID.
-halmeter:: Observar pines, señales y parámetros de HAL.
-halrun:: Manipular HAL del controlador de máquina mejorado desde la línea de comandos.
-halsampler:: Muestreo de datos de HAL en tiempo real.
-halstreamer:: Transmitir archivos de datos a HAL en tiempo real.
-halui:: Observar los pines HAL y dar ordenes a LinuxCNC a través de NML.
-io:: Acepta comandos de E/S NML e interactúa con HAL en el espacio de usuario.
-iocontrol:: Acepta comandos de E/S NML e interactúa con HAL en el espacio de usuario.
+
+axis:: AXIS LinuxCNC (The Enhanced Machine Controller) Graphical User Interface.
+axis-remote:: AXIS Remote Interface.
+comp:: Build, compile and install LinuxCNC HAL components.
+gladevcp:: Virtual Control Panel for LinuxCNC based on Glade, Gtk and HAL widgets.
+gs2:: HAL userspace component for Automation Direct GS2 VFD's.
+halcmd:: Manipulate the Enhanced Machine Controller HAL from the command line.
+hal_input:: Control HAL pins with any Linux input device, including USB HID devices.
+halmeter:: Observe HAL pins, signals, and parameters.
+halrun:: Manipulate the Enhanced Machine Controller HAL from the command line.
+halsampler:: Sample data from HAL in realtime.
+halstreamer:: Stream file data into HAL in real time.
+halui:: Observe HAL pins and command LinuxCNC through NML.
+io:: Accepts NML I/O commands, interacts with HAL in userspace.
+iocontrol:: Accepts NML I/O commands, interacts with HAL in userspace.
 linuxcnc:: LinuxCNC (The Enhanced Machine Controller).
-pyvcp:: Panel de control virtual para LinuxCNC.
-shuttle:: controla los pines HAL con los dispositivos ShuttleXpress y ShuttlePRO fabricados por Contour Design.
+pyvcp:: Virtual Control Panel for LinuxCNC.
+shuttle:: control HAL pins with the ShuttleXpress and ShuttlePRO devices made by Contour Design.
 
 [[sec:realtime-components]]
 
-== Lista de componentes en tiempo real
+== Realtime Components List
 
-Todos los comandos en la siguiente lista tienen páginas de manual.
-Algunos tendrán descripciones ampliadas y otros, limitadas.
-Con estas dos listas se sabe qué componentes existen. Usar 'man n name' para obtener información adicional. 
+Some of these will have expanded descriptions from the man pages. Some
+will have limited descriptions. All of the components have man pages.
+From this list you know what components exist and can use 'man n name' to
+get additional information in a terminal window.
 
 [NOTE]
-Si el componente requiere un hilo de punto flotante, suele ser el hilo servo, más lento.
+If the component requires a floating point thread that is usually the slower
+servo-thread.
 
-=== Componentes principales de LinuxCNC
+=== Core LinuxCNC components
 
-motion:: (((motion))) Acepta comandos de movimiento NML e interactúa con HAL en tiempo real.
+motion:: (((motion)))Accepts NML motion commands, interacts with HAL in realtime.
 
-axis:: (((axis))) Acepta comandos de movimiento NML e interactúa con HAL en tiempo real.
+axis:: (((axis)))Accepts NML motion commands, interacts with HAL in realtime.
 
-classicladder:: (((classicladder))) Software PLC en tiempo real basado en lógica de escalera.
-Consulte el capítulo <<cha:classicladder,ClassicLadder>> para obtener más información.
+classicladder:: (((classicladder)))Realtime software PLC based on ladder logic.
+See <<cha:classicladder,ClassicLadder>> chapter for more information.
 
-gladevcp:: (((gladevcp))) Muestra paneles de control virtuales construidos con GTK/Glade.
+gladevcp:: (((gladevcp)))Displays Virtual Control Panels built with GTK/Glade.
 
-threads:: (((threads))) Crea hilos HAL en tiempo real.
+threads:: (((threads)))Creates hard realtime HAL threads.
 
-=== Componentes lógicos y enfocados a bits (bitwise)
+=== Logic and Bitwise components
 
-and2:: (((and2))) Puerta AND de dos entradas.  Para devolver TRUE, ambas entradas deben ser ciertas.
+and2:: (((and2)))Two-input AND gate. For out to be true both inputs must be true.
 
-not:: (((not))) Inversor.
+not:: (((not)))Inverter.
 
-or2:: (((or2))) Puerta OR de dos entradas.
+or2:: (((or2)))Two-input OR gate.
 
-xor2:: (((xor2))) Puerta XOR (OR exclusivo) de dos entradas.
+xor2:: (((xor2)))Two-input XOR (exclusive OR) gate.
 
-debounce:: (((debounce))) Filtra ruido en las entradas digitales.
+debounce:: (((debounce)))Filter noisy digital inputs. <<sec:debounce, Description>>
 
-edge:: (((borde))) Detector de flanco.
+edge:: (((edge)))Edge detector.
 
-flipflop:: (((flipflop))) flip-flop tipo D.
+flipflop:: (((flipflop)))D type flip-flop.
 
-oneshot:: (((oneshot))) Generador de disparos de un pulso.
+oneshot:: (((oneshot)))One-shot pulse generator.
 
-logic:: (((logic))) Componente de función lógica general.
+logic:: (((logic)))General logic function component.
 
-lut5:: (((lut5))) Función lógica de 5 entradas basada en tabla de consulta (look-up table).
+lut5:: (((lut5)))A 5-input logic function based on a look-up table. <<sec:lut5,Description>>
 
-match8:: (((match8))) Detector de coincidencia binaria de 8 bits.
+match8:: (((match8)))8-bit binary match detector.
 
-select8:: (((select8))) Detector de coincidencia binaria de 8 bits.
- 
-=== Componentes aritméticos y de punto flotante
+select8:: (((select8)))8-bit binary match detector.
 
-abs:: [[sub:abs]](((abs))) Calcula el valor absoluto y el signo de la señal de entrada.
+=== Arithmetic and float-components
 
-blend:: (((blend))) Realiza interpolación lineal entre dos valores.
+abs:: [[sub:abs]](((abs)))Compute the absolute value and sign of the input signal.
 
-comp:: (((comp))) Comparador de dos entradas con histéresis.
+blend:: (((blend)))Perform linear interpolation between two values.
 
-constant:: (((constant))) Use un parámetro para establecer el valor de un pin.
+comp:: (((comp)))Two input comparator with hysteresis.
 
-sum2:: (((sum2))) Suma de dos entradas (cada una con una ganancia) y un desplazamiento.
+constant:: (((constant)))Use a parameter to set the value of a pin.
 
-counter:: (((counter))) Cuenta los pulsos de entrada (obsoleto).
-Utilice el componente <<sec:encoder,encoder>>.
+sum2:: (((sum2)))Sum of two inputs (each with a gain) and an offset.
 
-updown:: (((updown))) Cuenta hacia arriba o hacia abajo, con límites opcionales y comportamiento envolvente.
+counter:: (((counter)))Counts input pulses (deprecated).
+Use the <<sec:encoder, encoder>> component. 
 
-ddt:: (((ddt))) Calcula la derivada de la función de entrada.
+updown:: (((updown)))Counts up or down, with optional limits and wraparound behavior.
 
-deadzone:: (((deadzone))) Devuelve el centro si está dentro del umbral.
+ddt:: (((ddt)))Compute the derivative of the input function.
 
-hypot:: (((hypot))) Calculadora de hipotenusa de tres entradas (distancia euclidiana).
+deadzone:: (((deadzone)))Return the center if within the threshold.
 
-mult2:: (((mult2))) Producto de dos entradas.
+hypot:: (((hypot)))Three-input hypotenuse (Euclidean distance) calculator.
 
-mux16:: (((mux16))) Selecciona uno de entre dieciséis valores de entrada.
+mult2:: (((mult2)))Product of two inputs.
 
-mux2:: (((mux2))) Selecciona uno entre dos valores de entrada.
+mux16:: (((mux16)))Select from one of sixteen input values.
 
-mux4:: (((mux4))) Selecciona uno de entre cuatro valores de entrada.
+mux2:: (((mux2)))Select from one of two input values.
 
-mux8:: (((mux8))) Selecciona uno de entre ocho valores de entrada.
+mux4:: (((mux4)))Select from one of four input values.
 
-near:: (((near))) Determina si dos valores son aproximadamente iguales.
+mux8:: (((mux8)))Select from one of eight input values.
 
-offset:: (((offset))) Agrega un desplazamiento a una entrada y lo resta del valor de realimentación.
+near:: (((near)))Determine whether two values are roughly equal.
 
-integ:: (((integ))) Integrador.
+offset:: (((offset)))Adds an offset to an input, and subtracts it from the feedback value.
 
-invert:: (((invert))) Calcula el inverso de la señal de entrada.
+integ:: (((integ)))Integrator.
 
-wcomp:: (((wcomp))) Comparador de ventana.
+invert:: (((invert)))Compute the inverse of the input signal.
 
-weighted_sum:: (((weighted_sum))) Convierte un grupo de bits a un entero.
+wcomp:: (((wcomp)))Window comparator.
 
-biquad:: (((biquad))) Filtro Biquad IIR 
+weighted_sum:: (((weighted_sum)))Convert a group of bits to an integer.
 
-lowpass:: (((paso bajo))) filtro de paso bajo
+biquad:: (((biquad)))Biquad IIR filter
 
-limit1:: (((limit1))) Limita la señal de salida para que caiga entre mín y máx. footnote:[Cuando la entrada
-es una posición, esto significa que la 'posición' está limitada.]
+lowpass:: (((lowpass)))Low-pass filter
 
-limit2:: (((limit2))) Limita la señal de salida para que caiga entre min y max.
-Limita la velocidad de giro a menos de maxv por segundo. footnote:[Cuando la entrada
-es una posición, esto significa que 'posición' y 'velocidad' están limitadas.]
+limit1:: (((limit1)))Limit the output signal to fall between min and max. footnote:[When the input
+is a position, this means that the 'position' is limited.]
 
-limit3:: (((limit3))) Limita la señal de salida para que caiga entre min y max.
-Limita su velocidad de giro a menos de maxv por segundo.
-Limita su segunda derivada a menos de MaxA por segundo al cuadrado. footnote:[Cuando
-la entrada es una posición, esto significa que la 'posición', 'velocidad', y 'aceleración' están limitadas.]
+limit2:: (((limit2)))Limit the output signal to fall between min and max.
+Limit its slew rate to less than maxv per second. footnote:[When the input
+is a position, this means that 'position' and 'velocity' are limited.]
 
-maj3:: (((maj3))) Calcula la mayor de 3 entradas.
+limit3:: (((limit3)))Limit the output signal to fall between min and max.
+Limit its slew rate to less than maxv per second.
+Limit its second derivative to less than MaxA per second squared. footnote:[When
+the input is a position, this means that the 'position', 'velocity', and
+'acceleration' are limited.]
 
-scale:: (((scale))) Aplica una escala y un desplazamiento a su entrada.
+maj3:: (((maj3)))Compute the majority of 3 inputs.
 
-=== Conversion de tipos
+scale:: (((scale)))Applies a scale and offset to its input.
 
-conv_bit_s32:: (((conv_bit_s32))) Convierte un valor bit a s32.
+=== Type conversion
 
-conv_bit_u32:: (((conv_bit_u32))) Convierte un valor bit a u32.
+conv_bit_s32:: (((conv_bit_s32)))Convert a value from bit to s32.
 
-conv_float_s32:: (((conv_float_s32))) Convierte un valor float a s32.
+conv_bit_u32:: (((conv_bit_u32)))Convert a value from bit to u32.
 
-conv_float_u32:: (((conv_float_u32))) Convierte un valor float a u32.
+conv_float_s32:: (((conv_float_s32)))Convert a value from float to s32.
 
-conv_s32_bit:: (((conv_s32_bit))) Convierte un valor s32 a bit.
+conv_float_u32:: (((conv_float_u32)))Convert a value from float to u32.
 
-conv_s32_float:: (((conv_s32_float))) Convierte un valor s32 a float.
+conv_s32_bit:: (((conv_s32_bit)))Convert a value from s32 to bit.
 
-conv_s32_u32:: (((conv_s32_u32))) Convierte un valor s32 a u32.
+conv_s32_float:: (((conv_s32_float)))Convert a value from s32 to float.
 
-conv_u32_bit:: (((conv_u32_bit))) Convierte un valor u32 a bit.
+conv_s32_u32:: (((conv_s32_u32)))Convert a value from s32 to u32.
 
-conv_u32_float:: (((conv_u32_float))) Convierte un valor u32 a float.
+conv_u32_bit:: (((conv_u32_bit)))Convert a value from u32 to bit.
 
-conv_u32_s32:: (((conv_u32_s32))) Convierte un valor u32 a s32.
+conv_u32_float:: (((conv_u32_float)))Convert a value from u32 to float.
 
-=== Controladores de hardware
+conv_u32_s32:: (((conv_u32_s32)))Convert a value from u32 to s32.
 
-hm2_7i43:: (((hm2_7i43))) Controlador HAL para tarjetas EPP Anything Mesa Electronics 7i43 EPP con HostMot2.
+=== Hardware Drivers
 
-hm2_pci:: (((hm2_pci))) controlador HAL para Mesa Electronics 5i20, 5i22, 5i23, 4i65, 4i68 o cualquier placa de E/S, con firmware HostMot2.
+(((hal_ppmc)))
 
-hostmot2:: (((hostmot2))) controlador HAL para el firmware Mesa Electronics HostMot2.
+hal_ppmc:: Pico Systems <<cha:pico-drivers,driver>> for analog servo, PWM
+and Stepper controller.
 
-mesa_7i65:: (((7i65))) Soporte para la tarjeta servo de ocho ejes Mesa 7i65.
+(((hm2_7i43)))
 
-pluto_servo:: (((pluto_servo))) Controlador de hardware y firmware para la FPGA de puerto paralelo Pluto-P, para utilizar con servos.
+hm2_7i43:: Mesa Electronics driver for the 7i43 EPP Anything IO board with
+HostMot2. (See the man page for more information)
 
-pluto_step:: (((pluto_step))) Controlador de hardware y firmware para la FPGA de puerto paralelo Pluto-P, para utilizar con steppers.
+(((hm2_pci)))
 
-thc:: (((control de la altura de la antorcha))) Control de la altura de antorcha utilizando una tarjeta Mesa THC. 
+hm2_pci:: Mesa Electronics driver for the 5i20, 5i22, 5i23, 4i65, and 4i68
+Anything I/O boards, with HostMot2 firmware. (See the man page for more information)
 
-serport:: (((serport))) Controlador de hardware para los bits de E/S digitales del puerto serie 8250 y 16550. 
+(((hostmot2)))
 
+hostmot2:: Mesa Electronics <<cha:mesa-hostmot2-driver,driver>> for the 
+HostMot2 firmware.
 
-=== Cinemática
+(((7i65)))
 
-kins:: (((kins))) Definiciones de cinemática para LinuxCNC.
+mesa_7i65:: Mesa Electronics driver for the 7i65 eight-axis servo card. (See the
+man page for more information)
 
-gantrykins:: (((gantrykins))) Un módulo de cinemática que mapea un eje a múltiples articulaciones.
+(((pluto_servo)))
 
-genhexkins:: (((genhexkins))) Da seis grados de libertad en posición y orientación (XYZABC). La ubicación de los motores
-se define en tiempo de compilación.
+pluto_servo:: Pluto-P <<cha:pluto-p-driver,driver>> and firmware for the
+parallel port FPGA, for servos.
 
-genserkins:: (((genserkins))) Cinemática que puede modelar un manipulador general de eslabones en serie con hasta
-6 articulaciones angulares.
+(((pluto_step)))
 
-maxkins:: (((maxkins))) Cinemática para una fresadora de 5 ejes llamada 'max' con cabezal de inclinación (eje B) y rotativo horizontal montado sobre la mesa (eje C). Proporciona movimiento UVW en el sistema de coordenadas rotado. El archivo
-fuente, maxkins.c, puede ser un punto de inicio útil para otros sistemas de 5 ejes.
+pluto_step:: Pluto-P <<cha:pluto-p-driver,driver>> for the parallel port FPGA,
+for steppers.
 
-tripodkins:: (((tripodkins))) Las articulaciones representan la distancia del punto controlado desde tres ubicaciones 
-predefinidas (los motores), dando tres grados de libertad en posición (XYZ).
+(((torch height control)))
 
-trivkins:: (((trivkins))) Las fresadoras y tornos estándar utilizan el módulo de cinemática trivial.
-Hay una correspondencia 1:1 entre articulaciones y ejes. 
+thc:: Torch Height Control using a Mesa THC card or any analog to velocity input
 
-pumakins:: (((pumakins))) Cinemática para robots estilo PUMA.
+(((serport)))
 
-rotatekins:: (((rotatekins))) Los ejes X e Y se giran 45 grados en comparación con las articulaciones 0 y 1.
+serport:: Hardware driver for the digital I/O bits of the 8250 and 16550 serial port.
 
-scarakins:: (((scarakins))) Kinematics para robots tipo SCARA.
+=== Kinematics
 
-=== Control del motor
+kins:: (((kins)))kinematics definitions for LinuxCNC.
 
-at_pid:: (((at_pid))) Controlador proporcional/integral/derivativo con ajuste automático.
+gantrykins:: (((gantrykins)))A kinematics module that maps one axis to multiple joints.
 
-pid:: Controlador proporcional/integral/derivativo.
+genhexkins:: (((genhexkins)))Gives six degrees of freedom in position and orientation (XYZABC).
+The location of the motors is defined at compile time.
 
-pwmgen:: (((pwmgen))) Software de generación PWM/PDM. 
+genserkins:: (((genserkins)))Kinematics that can model a general serial-link manipulator with up to
+6 angular joints.
 
-encoder:: (((encoder))) Conteo por software de señales de encoder en cuadratura.
+maxkins:: (((maxkins)))Kinematics for a tabletop 5 axis mill named 'max' with tilting head (B axis) and
+horizontal rotary mounted to the table (C axis).
+Provides UVW motion in the rotated coordinate system.
+The source file, maxkins.c, may be a useful starting point for other 5-axis systems.
 
-stepgen:: (((stepgen))) Generación de pulsos de pasos de software.
+tripodkins:: (((tripodkins)))The joints represent the distance of the controlled point from three
+predefined locations (the motors), giving three degrees of freedom in
+position (XYZ).
 
-=== BLDC y control de motores trifásicos
+trivkins:: (((trivkins)))There is a 1:1 correspondence between joints and axes. Most standard
+milling machines and lathes use the trivial kinematics module.
 
-bldc_hall3:: (((bldc_hall3))) Controlador de motor BLDC bipolar de 3 cables, de conmutación trapezoidal, que utiliza sensores Hall.
+pumakins:: (((pumakins)))Kinematics for PUMA-style robots.
 
-clarke2:: (((clarke2))) Versión de dos entradas de la transformada de Clarke.
+rotatekins:: (((rotatekins)))The X and Y axes are rotated 45 degrees compared to the joints 0 and 1.
 
-clarke3:: (((clarke3))) Transformada Clarke (3 fases a cartesiana) .
+scarakins:: (((scarakins)))Kinematics for SCARA-type robots.
 
-clarkeinv:: (((clarkeinv))) Transformada Clarke inversa.
+=== Motor control
 
-=== Otros componentes
+at_pid:: (((at_pid)))Proportional/integral/derivative controller with auto tuning.
 
-charge_pump:: (((charge_pump))) Crea una onda cuadrada para la entrada de 'bomba de carga' de algunas placas controladoras.
-La 'bomba de carga' debe agregarse a la función hilo base.  Cuando está habilitada, la salida está activada durante
-un período y desactivada durante otro.  Para calcular la frecuencia de la salida 1/(período de tiempo en segundos x 2) = hz.
-Por ejemplo, si tiene un período base de 100.000 ns, o 0,0001 segundos, la fórmula sería 1/(0,0001 x 2) = 5000 hz o 5 Khz.
+pid:: Proportional/integral/derivative controller. <<sec:pid,Description>>
 
-encoder_ratio:: (((encoder_ratio))) Engranaje electrónico para sincronizar dos ejes.
+pwmgen:: (((pwmgen)))Software PWM/PDM generation. <<sec:pwmgen,Description>>
 
-estop_latch:: (((estop_latch))) ESTOP latch.
+encoder:: (((encoder)))Software counting of quadrature encoder signals. <<sec:encoder,Description>>.
 
-feedcomp:: (((feedcomp))) Multiplica la entrada por la relación de la velocidad actual a la velocidad de alimentación.
+stepgen:: (((stepgen)))Software step pulse generation. <<sec:stepgen,Description>>.
 
-gearchange:: (((gearchange))) Seleccion de uno de dos rangos de velocidad. 
+=== BLDC and 3-phase motor control
+
+bldc_hall3:: (((bldc_hall3)))3-wire Bipolar trapezoidal commutation BLDC motor driver using Hall sensors.
+
+clarke2:: (((clarke2)))Two input version of Clarke transform.
+
+clarke3:: (((clarke3)))Clarke (3 phase to cartesian) transform.
+
+clarkeinv:: (((clarkeinv)))Inverse Clarke transform.
+
+=== Other
+
+charge_pump:: (((charge_pump)))Creates a square-wave for the 'charge pump' input of some controller boards.
+The 'Charge Pump' should be added to the base thread function. When enabled the output is on for one period and off for one period. To calculate the frequency of the output 1/(period time in seconds x 2) = hz. For example if you have a base period of 100,000ns that is 0.0001 seconds and the formula would be 1/(0.0001 x 2) = 5,000 hz or 5 Khz.
+
+encoder_ratio:: (((encoder_ratio)))An electronic gear to synchronize two axes.
+
+estop_latch:: (((estop_latch)))ESTOP latch.
+
+feedcomp:: (((feedcomp)))Multiply the input by the ratio of current velocity to the feed rate.
+
+gearchange:: (((gearchange)))Select from one of two speed ranges.
 
 [[sec:ilowpass]] (((ilowpass)))
 
-ilowpass:: Si bien puede encontrar otras aplicaciones, este componente se escribió para crear un movimiento más suave con un MPG. 
-+ 
-En una máquina con alta aceleración, un jog corto puede comportarse casi como una funcion paso.
-Al poner el componente ilowpass entre l a salida de cuentas del codificador MPG
-y la entrada de jog-count del eje, se puede suavizar.
-+ 
-Elija la escala de forma conservadora para que durante una sesión nunca sea más de aproximadamente 2e9/escala pulsos vistos en el MPG.
-Elija la ganancia de acuerdo al nivel de suavizado deseado.  Divida los valores de axis.N.jog-scale por escala.
+ilowpass:: While it may find other applications,
+this component was written to create smoother motion while jogging with an MPG.
++
+In a machine with high acceleration, a short jog can behave almost like a step
+function. By putting the ilowpass component between the MPG encoder counts
+output and the axis jog-counts input, this can be smoothed.
++
+Choose scale conservatively so that during a single session there will never
+be more than about 2e9/scale pulses seen on the MPG. Choose gain according
+to the smoothing level desired. Divide the axis.N.jog-scale values by scale.
 
-joyhandle:: (((joyhandle))) Establece movimientos de joypad no lineales, bandas muertas y escalas.
+joyhandle:: (((joyhandle)))Sets nonlinear joypad movements, deadbands and scales.
 
-knob2float:: (((knob2float))) Convierte los conteos (probablemente de un mando codificador) a un valor de punto flotante.
+knob2float:: (((knob2float)))Convert counts (probably from an encoder) to a float value.
 
-minmax:: (((minmax))) Realiza un seguimiento de los valores mínimo y máximo de la entrada a las salidas.
+minmax:: (((minmax)))Track the minimum and maximum values of the input to the outputs.
 
-sample_hold:: (((sample_hold))) Muestreo y retencion.
+sample_hold:: (((sample_hold)))Sample and Hold.
 
-sampler:: (((sampler))) Muestrea datos HAL en tiempo real.
+sampler:: (((sampler)))Sample data from HAL in real time.
 
-siggen:: Generador de señal.
+siggen:: Signal generator. <<sec:siggen,Description>>.
 
-sim_encoder:: (((sim_encoder))) codificador de cuadratura simulado.
+sim_encoder:: (((sim_encoder)))Simulated quadrature encoder. <<sec:simulated-encoder,Description>>.
 
-sphereprobe:: (((sphereprobe))) Sondeo de una semiesfera.
+sphereprobe:: (((sphereprobe)))Probe a pretend hemisphere.
 
-steptest:: (((steptest))) Utilizado por Stepconf para permitir la prueba de los valores de aceleración y velocidad de un eje.
+steptest:: (((steptest)))Used by Stepconf to allow testing of acceleration and velocity values for an axis.
 
-streamer:: (((streamer))) Transmite archivos de datos HAL en tiempo real.
+streamer:: (((streamer)))Stream file data into HAL in real time.
 
-supply:: (((supply))) Establece los pines de salida con valores de parámetros (en desuso).
+supply:: (((supply)))Set output pins with values from parameters (deprecated).
 
-threadtest:: (((threadtest))) Componente para probar el comportamiento del hilo.
+threadtest:: (((threadtest)))Component for testing thread behavior.
 
-time:: (((time))) Temporizador acumulado de tiempo de ejecución que cuenta HH:MM:SS de entrada 'activa'.
+time:: (((time)))Accumulated run-time timer counts HH:MM:SS of 'active' input.
 
-timedelay:: (((timedelay))) El equivalente a un relé con retardo de tiempo.
+timedelay:: (((timedelay)))The equivalent of a time-delay relay.
 
-timedelta:: (((timedelta))) Componente que mide el comportamiento del tiempo de programación de subprocesos.
+timedelta:: (((timedelta)))Component that measures thread scheduling timing behavior.
 
-toggle2nist:: (((toggle2nist))) Botón alternante para logica nist.
+toggle2nist:: (((toggle2nist)))Toggle button to nist logic.
 
-toggle:: (((toggle))) Push-on, push-off de pulsadores momentáneos.
+toggle:: (((toggle)))Push-on, push-off from momentary pushbuttons.
 
-tristate_bit:: (((tristate_bit))) Coloca una señal en un pin de E/S solo cuando esté habilitado, similar a un
-buffer triestado en electrónica.
+tristate_bit:: (((tristate_bit)))Place a signal on an I/O pin only when enabled, similar to a tristate
+buffer in electronics.
 
-tristate_float:: (((tristate_float))) Coloca una señal en un pin de E/S solo cuando esté habilitado, similar a un
-buffer triestado en electrónica.
+tristate_float:: (((tristate_float)))Place a signal on an I/O pin only when enabled, similar to a tristate
+buffer in electronics.
 
-watchdog:: (((watchdog))) Monitorea de una a treinta y dos entradas para un 'latido'.
 
-== Llamadas API HAL
+
+watchdog:: (((watchdog)))Monitor one to thirty-two inputs for a 'heartbeat'.
+
+
+== HAL API calls
 ....
 hal_add_funct_to_thread.3hal
 hal_bit_t.3hal
@@ -349,10 +385,10 @@ hal_type_t.3hal
 hal_u32_t.3hal
 hal_unlink.3hal
 intro.3hal
-indocument.3hal
+undocumented.3hal
 ....
 
-== Llamadas RTAPI
+== RTAPI calls
 ....
 EXPORT_FUNCTION.3rtapi
 MODULE_AUTHOR.3rtapi
@@ -406,5 +442,5 @@ rtapi_task_pause.3rtapi
 rtapi_task_resume.3rtapi
 rtapi_task_start.3rtapi
 rtapi_task_wait.3rtapi
-.... 
+....
 
