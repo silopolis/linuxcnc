@@ -1,95 +1,93 @@
-:lang: es
-
 [[cha:halshow]]
 
 = Halshow
 
-El script halshow puede ayudarle a revisar HAL en ejecución.
-Este es un sistema muy especializado y debe conectarse con HAL en funcionamiento.
-No puede ejecutarse de forma independiente porque depende de la capacidad de HAL para
-informar de lo que sabe de sí mismo a través de la biblioteca de interfaz halcmd; esto
-se basa en el descubrimiento de sus propias capacidades. Cada vez que halshow se ejecuta con un LinuxCNC diferente,
-la configuración será diferente.
+The script halshow can help you find your way around a running HAL.
+This is a very specialized system and it must connect to a working HAL.
+It cannot run standalone because it relies on the ability of HAL to
+report what it knows of itself through the halcmd interface library. It
+is discovery based. Each time halshow runs with a different LinuxCNC
+configuration it will be different.
 
-Como veremos, esta capacidad de HAL para documentarse es clave
-para hacer un sistema CNC efectivo.
+As we will soon see, this ability of HAL to document itself is one key
+to making an effective CNC system.
 
-== Comenzando Halshow
+== Starting Halshow
 
-Halshow se encuentra en el menú AXIS en Máquina > Mostrar Configuración HAL.
+Halshow is in the AXIS menu under Machine/Show HAL Configuration.
 
-Halshow está en TkLinuxCNC bajo el menú Scripts > HAL Show.
+Halshow is in the TkLinuxCNC menu under Scripts/HAL Show.
 
-Halshow se puede iniciar desde una línea de comandos del terminal y especificar
-formatos para elementos enteros y de punto flotante (pines o señales) e identificar un
-archivo guardado de lista de seguimiento para su utilización:
+Halshow can be started from a terminal command line and specify
+formats for integer and float items (pins or signals) and identify a
+saved watchlist file to use:
 
 ----
 $ halshow --help
-Uso:
-  halshow [Opciones] [watchfile]
-  Opciones:
-           --help (esta ayuda)
+Usage:
+  halshow [Options] [watchfile]
+  Options:
+           --help    (this help)
            --fformat format_string_for_float
            --iformat format_string_for_int
 
-Notas:
-       Cree un archivo de seguimiento en halshow usando: 'Archivo > Guardar lista de seguimiento'
-       linuxcnc debe estar ejecutándose para uso independiente
+Notes:
+       Create watchfile in halshow using: 'File/Save Watch List'
+       linuxcnc must be running for standalone usage
 ----
 
-Ejemplo para limitar a cinco el número de decimales para flotantes
-y usar un archivo llamado my.halshow en el directorio actual:
+Example to limit number of decimal points for floats
+and used a file named my.halshow in the current directory:
 
 ----
-$ halshow --fformat ".5f" ./my.halshow
+$ halshow  --fformat ".5f" ./my.halshow
 ----
 
-== Area de Arbol HAL
+== HAL Tree Area
 
-A la izquierda de su pantalla, como se muestra en la figura, hay una vista de árbol parecido
-al de los navegadores de archivos. A la derecha hay un cuaderno con las pestañas SHOW (ver) y WATCH (observar).
-
+At the left of its display as shown in figure is a tree view, somewhat like
+you might see with some file browsers. At the right is a tabbed notebook with
+tabs for show and watch.
 
 [[cap:halshow-layout]]
 
-.Ventana de Halshow
+.Halshow Layout
 
 image::images/halshow-1.png[align="center", alt="Halshow Layout"]
 
-El árbol muestra todas las partes principales de HAL. Delante de cada una hay un
-pequeño signo más (\+) o menos (-) en un recuadro. Al hacer clic en el signo (+)
-se expande el nodo del árbol para mostrar lo que está bajo de él. Si esa casilla muestra un
-signo menos (-), al hacer clic en él, contraerá esa sección del árbol.
+The tree shows all of the major parts of a HAL. In front of each is a
+small plus (+) or minus (-) sign in a box. Clicking the plus will
+expand that tree node to display what is under it. If that box shows a
+minus sign, clicking it will collapse that section of the tree.
 
-También puede expandir o contraer la visualización del árbol usando el menu 'Tree View'
-en el borde superior izquierdo de la pantalla. Bajo 'Tree View' podrá encontrar:
-Expandir Árbol, Contraer árbol, Expandir pines, Expandir parámetros,
-Expandir Señales y Borrar Observacion (Erase Watch). (Tenga en cuenta que Erase Watch borra 'todo' lo
-previamente establecido en WATCH; no puede borrar solo un item.)
+You can also expand or collapse the tree display using the Tree View
+menu at the upper left edge of the display. Under Tree View you will
+find: Expand Tree, Collapse Tree; Expand Pins, Expand Parameters,
+Expand Signals; and Erase Watch. (Note that Erase Watch erases 'all'
+previously set watches, you cannot erase just one watch.)
 
-.Pestaña "Show"
+.Show Menu
 
-image::images/halshow-3.png[align="center",alt="Show Menu"]
+image::images/halshow-3.png[align="center", alt="Show Menu"]
 
-== Area Show HAL
+== HAL Show Area
 
-Al hacer clic en el nombre de un nodo, "Components" por ejemplo,
-mostrara (en la pestaña "SHOW") todos los contenidos HAL sobre 
-ese nodo. La Figura <<cap:halshow-layout>> muestra una lista exactamente como la
-veria si hace clic en el nombre de "Components" mientras ejecuta, por ejemplo, una
-tarjeta servo Mesa m5i20 estándar. La información en pantalla es exactamente como
-la que se muestran en las herramientas tradicionales de análisis de HAL basadas en texto. La ventaja
-aquí es que tenemos acceso con un clic del mouse, acceso que puede ser tan amplio o
-tan enfocado como se necesite.
+Clicking on the node name, the word "Components" for example, will
+show you (under the "Show" tab) all that HAL knows about the contents
+of that node. Figure <<cap:halshow-layout>> shows a list exactly like
+you will see if you click the "Components" name while you are running a
+standard m5i20 servo card. The information display is exactly like
+those shown in traditional text based HAL analysis tools. The advantage
+here is that we have mouse click access, access that can be as broad or
+as focused as you need.
 
-Si echamos un vistazo más de cerca a la pantalla del árbol podemos ver que las seis
-partes principales de HAL pueden expandirse al menos en un nivel. Cuando estos
-niveles se expanden, puede enfocarse más lo que interesa
-haciendo clic en el nodo de árbol más a la derecha. Usted encontrará que hay algunos
-pines y parámetros HAL que muestran más de una respuesta. Esto se debe a la
-naturaleza de las rutinas de búsqueda en halcmd. Si busca un pin determinado,
-puede obtener dos, como en este caso:
+If we take a closer look at the tree display we can see that the six
+major parts of a HAL can all be expanded at least one level. As these
+levels are expanded you can get more focused with the reply when you
+click on the rightmost tree node. You will find that there are some HAL
+pins and parameters that show more than one reply. This is due to the
+nature of the search routines in halcmd itself. If you search one pin
+you may get two, like this:
 
 ----
 Component Pins: 
@@ -98,40 +96,42 @@ Owner  Type  Dir  Value  Name
 06     bit    -W  FALSE  parport.0.pin-10-in-not 
 ----
 
-El nombre del segundo pin contiene el nombre completo del primero.
+The second pin's name contains the complete name of the first.
 
-Debajo del área de exhibición a la derecha hay un conjunto de widgets que permitirán
-interactuar con HAL. Los comandos que se ingresan aquí y los
-efecto que tienen en el HAL en ejecución no se guardan. Seran
-persistentes mientras LinuxCNC permanezca activo, pero se borraran tan pronto como LinuxCNC se cierre.
+Below the show area on the right is a set of widgets that will allow
+you to play with the running HAL. The commands you enter here and the
+effect that they have on the running HAL are not saved. They will
+persist as long as LinuxCNC remains up but are gone as soon as LinuxCNC is.
 
-El cuadro de entrada etiquetado "Comando de prueba HAL:" aceptará cualquiera de los
-comandos listados para halcmd. Éstos incluyen:
+The entry box labeled "Test HAL Command:" will accept any of the
+commands listed for halcmd. These include:
 
- - loadrt, unloadrt (cargar/descargar módulo en tiempo real)
- - loadusr, unloadusr (cargar/descargar componente de espacio de usuario)
- - addf, delf (agregar/eliminar una función a/desde un hilo en tiempo real)
- - net (crear una conexión entre dos o más elementos)
- - setp (establecer parámetro o pin a un valor)
+ - loadrt, unloadrt (load/unload real-time module)
+ - loadusr, unloadusr (load/unload user-space component)
+ - addf, delf (add/delete a function to/from a real-time thread)
+ - net (create a connection between two or more items)
+ - setp (set parameter (or pin) to a value)
 
-Este pequeño editor ingresará un comando cada vez que presione <enter> o
-presione el botón 'Execute'. Cuando estos comandos no están formados correctamente, se mostrará
-un mensaje de error de halcmd. 
-Si no está seguro de cómo configurar un comando adecuado, necesitará leer
-una vez más la documentación sobre halcmd y los módulos específicos que está utilizando.
+This little editor will enter a command any time you press <enter> or
+push the execute button. An error message from halcmd will show below
+this entry widget when these commands are not properly formed. If you
+are not certain how to set up a proper command you'll need to read
+again the documentation on halcmd and the specific modules that you are
+working with.
 
-Usemos este editor para agregar un módulo diferencial a un HAL y
-conéctarlo a la posición del eje para que podamos ver la tasa de cambio de
-posición, es decir, la aceleración. Primero necesitamos cargar un componente HAL llamado
-ddt; agréguelo al hilo del servo. Luego conéctelo al pin de posición
-de una articulación. Una vez hecho esto podemos encontrar la salida del
-diferenciador en halscope. Veamoslo.
+Let's use this editor to add a differential module to a HAL and
+connect it to axis position so that we could see the rate of change in
+position, i.e., acceleration. We first need to load a HAL component named
+ddt, add it to the servo thread, then connect it to the position pin
+of a joint. Once that is done we can find the output of the
+differentiator in halscope. So let's go. (Yes, I looked this one up.)
 
 ----
 loadrt ddt
 ----
 
-Ahora mire el nodo de componentes y debería ver ddt en algún lugar.
+Now look at the components node and you should see ddt in there
+someplace.
 
 ----
 Loaded HAL Components:
@@ -146,8 +146,8 @@ ID Type        Name
 02 User   iocontrol
 ----
 
-Por supuesto, ahí está. Tenga en cuenta que su ID es 08. A continuación necesitamos
-averigüar qué funciones están disponibles con él, por lo que seleccionaremos el nodo funciones:
+Sure enough there it is. Notice that its ID is 08. Next we need to
+find out what functions are available with it so we look at functions:
 
 ----
 Exported Functions: 
@@ -165,34 +165,36 @@ Owner  CodeAddr      Arg  FP Users Name
   04   E0B614AD E0DC7448 YES     1 stepgen.update-freq 
 ----
 
-Aquí buscamos el ID 08 y vemos una función llamada ddt.0. Deberíamos poder agregar ddt.0 al hilo del servo y
-hará sus cálculos cada vez que se actualice ese hilo. El comando 'addf' usa tres argumentos como
-estos:
+Here we look for owner #08 and see a function
+named ddt.0. We should be able to add ddt.0 to the servo thread and it
+will do its math each time the servo thread is updated. Once again we
+look up the addf command and find that it uses three arguments like
+this:
 
 ----
-addf <functname> <nombre de hilo> [<posición>]
+addf <functname> <threadname> [<position>]
 ----
 
-Ya conocemos la functname = ddt.0, así que obtengamos el nombre del hilo correcto
-expandiendo el nodo de hilos (Threads) en el árbol. Aquí vemos dos hilos;
-hilo servo e hilo base. La posición de ddt.0 en el hilo no es
-crítica. Agregemos la función ddt.0 al hilo servo:
+We already know the functname=ddt.0 so let's get the thread name right
+by expanding the thread node in the tree. Here we see two threads,
+servo-thread and base-thread. The position of ddt.0 in the thread is
+not critical. So we add the function ddt.0 to the servo-thread:
 
 ----
 addf ddt.0 servo-thread
 ----
 
-Esto es solo para ver su valor, así que dejamos [<posición>] en blanco y la funcion queda en la última
-posición en el hilo. La siguiente figura muestra el estado de halshow
-después de que este comando ha sido emitido.
+This is just for viewing, so we leave position blank and get the last
+position in the thread. The following figure shows the state of halshow
+after this command has been issued.
 
-.Comando Addf
+.Addf Command
 
-image::images/halshow-2.png[align="center",alt="Comando Addf"]
+image::images/halshow-2.png[align="center", alt="Addf Command"]
 
-A continuación necesitamos conectar ddt a algo. Pero ¿cómo sabemos
-qué pines están disponibles?. La respuesta es mirar debajo de los pines. Ahí
-encontraremos ddt y se vera esto:
+Next we need to connect ddt to something. But how do we know
+what pins are available? The answer is to look under pins. There we
+find ddt and see this:
 
 ----
 Component Pins: 
@@ -201,8 +203,9 @@ Owner Type  Dir Value       Name
 08    float -W  0.00000e+00 ddt.0.out 
 ----
 
-Parece fácil de entender, pero ¿qué señal o pin queremos conectar a ddt?. Podría ser un pin de eje, un pin de stepgen o una
-señal. Vemos esto cuando miramos joint.0:
+That looks easy enough to understand, but what signal or pin do we
+want to connect to it? It could be an axis pin, a stepgen pin, or a
+signal. We see this when we look at joint.0:
 
 ----
 Component Pins: 
@@ -210,15 +213,15 @@ Owner Type  Dir Value       Name
 03    float -W  0.00000e+00 joint.0.motor-pos-cmd ==> Xpos-cmd
 ----
 
-Así que parece que Xpos-cmd debería ser una buena señal para usar. De vuelta al
-editor, donde ingresamos el siguiente comando:
+So it looks like Xpos-cmd should be a good signal to use. Back to the
+editor where we enter the following command:
 
 ----
 linksp Xpos-cmd ddt.0.in
 ----
 
-Ahora, si observamos la señal Xpos-cmd usando el nodo del árbol, veremos
-lo que hemos hecho
+Now if we look at the Xpos-cmd signal using the tree node we'll see
+what we've done:
 
 ----
 Signals: 
@@ -229,44 +232,47 @@ float 0.00000e+00 Xpos-cmd
 ==> stepgen.0.position-cmd
 ----
 
-Vemos que esta señal proviene de joint.0.motor-pos-cmd y va a
-ddt.0.in y stepgen.0.position-cmd. Al conectar nuestro bloque a
-la señal hemos evitado cualquier complicación con el flujo normal de
-este comando de movimiento.
+We see that this signal comes from joint.o.motor-pos-cmd and goes to
+both ddt.0.in and stepgen.0.position-cmd. By connecting our block to
+the signal we have avoided any complications with the normal flow of
+this motion command.
 
-El area 'Show' utiliza halcmd para descubrir lo que está sucediendo en un
-HAL en ejecucion. Da información completa sobre lo que ha
-descubierto. También se actualiza a medida que se emiten los comandos en el pequeño
-panel de edición para modificar esa HAL. Hay momentos en que se quiere que se muestren un
-conjunto diferente de cosas sin toda la información disponible en este area.
-Ahí es donde el Área 'WATCH' de HAL es de valor.
+The HAL Show Area uses halcmd to discover what is happening in a
+running HAL. It gives you complete information about what it has
+discovered. It also updates as you issue commands from the little
+editor panel to modify that HAL. There are times when you want a
+different set of things displayed without all of the information
+available in this area. That is where the HAL Watch Area is of value.
 
-== Pestaña WATCH
+== Watch Tab
 
-Al hacer clic en la pestaña WATCH aparece un cuadro en blanco. Puede añadir señales y pines
-a este cuadro y ver sus valores. footnote:[La frecuencia de actualización de la
-pantalla es mucho más baja que Halmeter o Halscope. Si necesita buena resolucion
-del tiempo de las señales, esas herramientas son mucho más efectivas.] Usted puede agregar
-señales o pines cuando se muestra la pestaña WATCH haciendo clic en sus nombres.
-La siguiente figura muestra este cuadro con varias señales de tipo "bit". Estas
-señales incluyen habilitación de salida (enable-out) para los primeros tres ejes y dos de las tres
-señales de "estop" de iocontrol. Observe que los ejes no están habilitados aunque
-las señales de parada indican que LinuxCNC no está en parada. Una mirada rápida a la gui de usuario
-muestra que la condición de LinuxCNC es ESTOP RESET (para TkLinuxCNC) u OFF (en Axis, esquina inferior izquierda).
-La habilitacion del amplificador no pasara a 'verdadero' hasta que la máquina se haya encendido.
+Clicking the watch tab produces a blank canvas. You can add signals and pins
+to this canvas and watch their values.footnote:[The refresh rate of the watch
+display is much lower than Halmeter or Halscope. If you need good resolution
+of the timing of signals those tools are much more effective.] You can add
+signals or pins when the watch tab is displayed by clicking on the name of it.
+The following figure shows this canvas with several "bit" type signals. These
+signals include enable-out for the first three axes and two of the three
+iocontrol "estop" signals. Notice that the axes are not enabled even though the
+estop signals say that LinuxCNC is not in estop. A quick look at TkLinuxCNC
+shows that the condition of LinuxCNC is ESTOP RESET. The amp enables do not
+turn true until the machine has been turned on.
 
 .Watch Tab
 
-image::images/halshow-4.png[align="center",alt="Watch Tab"]
+image::images/halshow-4.png[align="center", alt="Watch Tab"]
 
-WATCH muestra valores de tipo de bit (binarios) utilizando círculos de colores
-representando leds. Se muestran en color marrón oscuro cuando la señal de bit o el pin son 'Falso', y amarillo claro si es verdadero.
-Si selecciona un pin o señal que no es una señal de tipo bit (binario), WATCH mostrará un valor numérico.
+Watch displays bit type (binary) values using colored circles
+representing LEDs. They show as dark brown when a bit signal or pin is
+false, and as light yellow whenever that signal is true. If you select
+a pin or signal that is not a bit type (binary) signal, watch will show
+it as a numerical value.
 
-WATCH permite probar rápidamente interruptores o ver el efecto de
-los cambios que realice en LinuxCNC mientras utiliza la interfaz gráfica.
-La frecuencia de actualización de WATCH es un poco lenta para ver los pulsos de paso, pero puede
-usarlo para eso si mueve un eje muy lentamente o en muy pequeños
-incrementos de distancia. Si ha usado IO_Show en LinuxCNC, la página de visualización
-en halshow puede configurarse para ver un parport como lo hizo con IO_Show.
+Watch will quickly allow you to test switches or see the effect of
+changes that you make to LinuxCNC while using the graphical interface.
+Watch's refresh rate is a bit slow to see stepper pulses, but you can
+use it for these if you move an axis very slowly or in very small
+increments of distance. If you've used IO_Show in LinuxCNC, the watch page
+in halshow can be set up to watch a parport much as IO_Show did.
+
 
