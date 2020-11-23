@@ -1,99 +1,166 @@
-﻿:lang: es
-:toc:
-
 [[cha:linuxcnc-user-introduction]]
 
-= Introduccion para usuarios de LinuxCNC
+= LinuxCNC User Introduction
 
-== Como funciona LinuxCNC
+== How LinuxCNC Works
 
-LinuxCNC es un conjunto de aplicaciones altamente personalizables para el control de fresadoras y tornos de control numerico mediante una computadora (CNC), impresoras 3D, robots, cortadores láser, cortadores de plasma y otros dispositivos automatizados. Es capaz de proporcionar el control coordinado de hasta 9 ejes de movimiento.
+LinuxCNC is a suite of highly-customisable applications for the control of a Computer Numerically
+Controlled (CNC) mills and lathes, 3D printers, robots, laser cutters, plasma cutters and other automated
+devices. It is capable of providing coordinated control of up to 9 axes of movement.
 
-En esencia, LinuxCNC consta de varios componentes clave que se integran para formar un sistema completo:
+At its heart, LinuxCNC consists of several key components that are integrated together to form one
+complete system:
 
-* una interfaz gráfica de usuario (GUI), que forma la interfaz básica entre el operador, el software y la máquina CNC en sí misma;
-* una <<cha:hal-introduction,capa de abstracción de hardware (HAL)>>, que proporciona un método para vincular las diversas señales virtuales internas generadas y recibidas por LinuxCNC con el mundo exterior.
-* controladores de alto nivel que coordinan la generación y ejecución del control de movimiento de la máquina CNC, es decir,el controlador de movimiento (EMCMOT), el controlador de entrada/salida discretas (EMCIO) y el ejecutor de tareas (EMCTASK).
+* a Graphical User Interface (GUI), which forms the basic interface between the operator, the software
+and the CNC machine itself;
+* the <<cha:hal-introduction,Hardware Abstraction Layer>> (HAL), which provides a method of linking all
+the various internal virtual signals generated and received by LinuxCNC with the outside world; and,
+* the high level controllers that coordinate the generation and execution of motion control of the CNC
+machine, namely the motion controller (EMCMOT), the discrete input/output controller (EMCIO) and the
+task executor (EMCTASK).
 
-La siguiente ilustración es un diagrama de bloques simple que muestra una fresadora típica CNC de 3 ejes con motores paso a paso:
+The below illustration is a simple block diagram showing what a typical 3-axis, CNC mill with stepper
+motors might look like: 
 
-image::images/whatstep1.png[align="center", alt="Máquina simple controlada por LinuxCNC"]
+image::images/whatstep1.png[align="center", alt="Simple LinuxCNC Controlled Machine"]
 
-El ordenador que ejecuta LinuxCNC envía una secuencia de impulsos a través del puerto paralelo a las unidades paso a paso.
-Cada una de esas unidades tiene un motor paso a paso conectado. Cada unidad recibe dos señales independientes; una señal para ordenar al accionamiento que mueva su motor paso a paso asociado en sentido horario o antihorario (señal de direccion), y una segunda señal (tren de pulsos) que define la velocidad a la que gira el motor paso a paso.
+A computer running LinuxCNC sends a sequence of pulses via the parallel port to the stepper drives, each of
+which has one stepper motor connected to it. Each drive receives two independent signals; one signal to
+command the drive to move its associated stepper motor in a clockwise or anti-clockwise direction, and a
+second signal that defines the speed at which that stepper motor rotates. 
 
-Se ha ilustrado un sistema de motor paso a paso bajo control del puerto paralelo, pero un sistema LinuxCNC también puede conectarse a una amplia variedad de interfaces hardware dedicadas de control de movimiento para una mayor velocidad o capacidades de E/S. Se puede encontrar una lista completa de interfaces compatibles con LinuxCNC en la página Wiki http://http://wiki.linuxcnc.org/cgi-bin/wiki.pl?LinuxCNC_Supported_Hardware[Hardware soportado]
+While a stepper motor system under parallel port control is illustrated, a LinuxCNC system can also take
+advantage of a wide variety of dedicated hardware motion control interfaces for increased speed and I/O 
+capabilities. A full list of interfaces supported by LinuxCNC can be found on the 
+http://http://wiki.linuxcnc.org/cgi-bin/wiki.pl?LinuxCNC_Supported_Hardware[Supported Hardware] page of the
+Wiki.
 
-En la mayoría de los casos, los usuarios crearán una configuración específica para la configuración de su maquina utilizando el <<cha:stepconf-wizard,Asistente de Configuracion de Steppers>> (para sistemas CNC que funcionan con puerto paralelo) o el <<cha:pncconf-wizard,Asistente de Hardware Mesa>> (para sistemas más avanzados que utilizan tarjetas PCI Mesa Anything I/O). La ejecución de cualquiera de los asistentes creará varias carpetas en el disco  duro del ordenador que contiene una cierta cantidad de archivos de configuración específicos para esa máquina CNC, y un ícono colocado en el escritorio para permitir el lanzamiento fácil de LinuxCNC.
+In most circumstances, users will create a configuration specific to their mill setup using either the
+<<cha:stepconf-wizard,Stepper Configuration Wizard>> (for CNC systems operating using the computers'
+parallel port) or the <<cha:pncconf-wizard,Mesa Hardware Wizard>> (for more advanced systems utilising a
+Mesa Anything I/O PCI card). Running either wizard will create several folders on the computers' hard drive
+containing a number of configuration files specific to that CNC machine, and an icon placed on the desktop
+to allow easy launching of LinuxCNC. 
 
-Por ejemplo, si se usó el Asistente de Configuración de Steppers para crear una configuración para la fresadora CNC de 3 ejes ilustrada mas arriba y se titulo 'Mi_CNC', las carpetas creadas por el asistente contendrían generalmente los
-siguientes archivos:
+For example, if the Stepper Configuration Wizard was used to create a setup for the 3-axis CNC mill
+illustrated above entitled 'My_CNC', the folders created by the wizard would typically contain the
+following files:
 
-* Carpeta: Mi_CNC
-** Mi_CNC.ini
-*** El archivo INI contiene toda la información básica del hardware relacionado con el funcionamiento de la fresadora CNC, tales como el número de pasos que debe realizar cada motor paso a paso para completar una revolución completa, la velocidad máxima en que cada paso a paso puede operar, los límites de recorrido de cada eje o la configuración y el comportamiento de interruptores de límite en cada eje.
-** Mi_CNC.hal
-*** Este archivo HAL contiene información que le dice a LinuxCNC cómo vincular las señales virtuales internas a conexiones físicas exteriores a la computadora. Por ejemplo, especificando el pin 4 en el puerto paralelo para enviar la señal de dirección de paso del eje Z, o instruir a LinuxCNC para dejar de mover el motor del eje X cuando se activa el interruptor de límite conectado al pin 13 del puerto paralelo.
+* Folder: My_CNC 
+** My_CNC.ini 
+*** The INI file contains all the basic hardware information regarding the operation of the CNC mill such
+as the number of steps each stepper motor must turn to complete one full revolution, the maximum rate at
+which each stepper may operate at, the limits of travel of each axis or the configuration and behaviour of
+limit switches on each axis. 
+** My_CNC.hal 
+*** This HAL file contains information that tells LinuxCNC how to link the internal virtual signals to
+physical connections beyond the computer. For example, specifying pin 4 on the parallel port to send out
+the Z axis step direction signal, or directing LinuxCNC to cease driving the X axis motor when a limit
+switch is triggered on parallel port pin 13.
 ** custom.HAL
-*** Las personalizaciones para la configuración de la fresadora, más allá del alcance del asistente, pueden realizarse incluyendo enlaces adicionales a otros puntos virtuales dentro de LinuxCNC en este archivo HAL. Al iniciar una sesión de LinuxCNC, este archivo se lee y se procesa antes de cargar la GUI. Por ejemplo, puede incluir iniciar las comunicaciones Modbus con el driver del husillo para que se confirme como operativo antes de que se muestre la GUI.
-** custom_postgui.hal
-*** El archivo HAL custom_postgui permite una mayor personalización de LinuxCNC, pero difiere de custom.HAL en que se procesa después de que se muestre la GUI. Por ejemplo, después de establecer comunicaciones Modbus al driver del motor del husillo en custom.hal, LinuxCNC puede usar el archivo custom_postgui para vincular la lectura de la velocidad del husillo desde el driver del motor con un gráfico de barras que se muestra en la GUI.
-** postgui_backup.hal
-*** Proporciona una copia de seguridad del archivo custom_postgui.hal para permitir al usuario restaurar rápidamente una configuración HAL postgui que funcionaba anteriormente. Esto es especialmente útil si el usuario desea ejecutar el Asistente de configuración nuevamente bajo el mismo nombre, 'Mi_CNC',para modificar algunos parámetros.
-Al guardar la nueva configuración con el asistente, se sobrescribirá el archivo custom_postgui existente mientras que el archivo postgui_backup queda intacto.
+*** Customisations to the mill configuration beyond the scope of the wizard may be performed by including
+further links to other virtual points within LinuxCNC in this HAL file. When starting a LinuxCNC session,
+this file is read and processed before the GUI is loaded. An example may include initiating Modbus
+communications to the spindle motor so that it is confirmed as operational before the GUI is displayed.
+** custom_postgui.hal 
+*** The custom_postgui HAL file allows further customisation of LinuxCNC, but differs from custom.HAL in
+that it is processed after the GUI is displayed. For example, after establishing Modbus communications to
+the spindle motor in custom.hal, LinuxCNC can use the custom_postgui file to link the spindle speed readout
+from the motor drive to a bargraph displayed on the GUI.
+** postgui_backup.hal 
+*** This is provided as a backup copy of the custom_postgui.hal file to allow the user to quickly restore a
+previously-working postgui HAL configuration. This is especially useful if the user wants to run the
+Configuration Wizard again under the same 'My_CNC' name in order to modify some parameters of the mill.
+Saving the mill configuration in the Wizard will overwrite the existing custom_postgui file while leaving
+the postgui_backup file untouched.
 ** tool.tbl
-*** Un archivo de tabla de herramientas contiene una lista parametrizada de cualquier herramienta de corte utilizada. Estos parámetros puede incluir el diámetro y la longitud del cortador, y se utiliza para proporcionar un catálogo de datos que le dice a LinuxCNC cómo compensar su movimiento para herramientas de diferentes tamaños dentro de una operación de fresado.
-* Carpeta: nc_files
-*** La carpeta nc_files se proporciona como la ubicación predeterminada para almacenar los programas de código G utilizados en la maquina. También incluye varias subcarpetas con ejemplos de código G.
+*** A tool table file contains a parameterised list of any cutting tools used by the mill. These parameters
+can include cutter diameter and length, and is used to provide a catalogue of data that tells LinuxCNC how
+to compensate its motion for different sized tools within a milling operation. 
+* Folder: nc_files 
+*** The nc_files folder is provided as a default location to store the G-code programs used to drive the
+mill. It also includes a number of subfolders with G-code examples.
 
-== Interfaces graficas de usuario
+== Graphical User Interfaces
 
-Una interfaz gráfica de usuario es la parte del LinuxCNC con la que interactúa el operador de la máquina herramienta.
-LinuxCNC viene con varios tipos de interfaces de usuario que se pueden elegir al editar ciertos campos contenidos en el <<cha:ini-configuration,archivo INI:
+A graphical user interface is the part of the LinuxCNC that the machine tool operator interacts with.
+LinuxCNC comes with several types of user interfaces which may be chosen from by editing certain fields
+contained in the <<cha:ini-configuration,INI file>>:
 
-<<cha:axis-gui,'Axis'>>, es la interfaz GUI de teclado estándar. Es también la GUI predeterminada que se inicia cuando se usa el Asistente de Configuración para crear un icono lanzador en escritorio:
+<<cha:axis-gui,'Axis'>>, the standard keyboard GUI interface. This is also the default GUI launched when a
+Configuration Wizard is used to create a desktop icon launcher:
 
-image::../gui/images/axis_es.png[align="center", alt="Axis, interfaz GUI de teclado estándar"]
+image::../gui/images/axis.png[align="center", alt="Axis, the standard keyboard GUI interface"]
 
 
-<<cha:touchy-gui,'Touchy'>> es una GUI para usar con pantalla táctil:
+<<cha:touchy-gui,'Touchy'>>, a touch screen GUI:
 
-image::../gui/images/touchy_es.png[align="center", alt="Touchy, una GUI para usar con pantalla táctil"]
+image::../gui/images/touchy.png[align="center", alt="Touchy, a touch screen GUI"]
 
-<<cha:gscreen,'Gscreen'>> una GUI de pantalla táctil configurable por el usuario:
+<<cha:gscreen,'Gscreen'>>, a user-configurable touch screen GUI:
 
-image::../gui/images/gscreen-mill.png[align="center", alt="Gscreen, una GUI de pantalla táctil configurable"]
+image::../gui/images/gscreen-mill.png[align="center", alt="Gscreen, a configurable base touch screen GUI"]
 
-<<cha:gmoccapy,'GMOCCAPY'>> una GUI de pantalla táctil basada en Gscreen. GMOCCAPY también está diseñada para funcionar tambien en aplicaciones donde el teclado y el mouse son los métodos preferidos para controlar la GUI:
+<<cha:gmoccapy,'GMOCCAPY'>>, a touch screen GUI based on Gscreen. GMOCCAPY is also designed to work equally
+well in applications where a keyboard and mouse are the preferred methods of controlling the GUI:
 
-image::../gui/images/gmoccapy_3_axis.png[align="center", alt="gmoccapy, una GUI de pantalla táctil basada en Gscreen"]
+image::../gui/images/gmoccapy_3_axis.png[align="center", alt="gmoccapy, a touch screen GUI based on Gscreen"]
 
-<<cha:ngcgui,'NGCGUI'>> una GUI de subrutinas que proporciona una programación de código G, de tipo asistente. NGCGUI puede ejecutarse como un programa independiente o incrustado en otra GUI como una serie de pestañas. La siguiente captura de pantalla muestra a NGCGUI incrustado en Axis:
+<<cha:ngcgui,'NGCGUI'>>, a subroutine GUI that provides wizard-style programming of G code. NGCGUI may be
+run as a standalone program or embedded into another GUI as a series of tabs. The following screen shot
+shows NGCGUI embedded into Axis:
 
-image::../gui/images/ngcgui.png[align="center", alt="NGCGUI, una GUI de subrutinas que proporciona una programación de código G tipo asistente"]
+image::../gui/images/ngcgui.png[align="center", alt="NGCGUI, a subroutine GUI that provides wizard-style programming of G code"]
 
-== Paneles de control virtual
+== Virtual Control Panels
 
-Como se mencionó anteriormente, muchas de las GUI de LinuxCNC pueden ser personalizadas por el usuario. Esto se puede hacer para agregar indicadores, salidas de lectores, interruptores o controles deslizantes a la apariencia básica de una de las GUI para aumentar su flexibilidad o funcionalidad. Se ofrecen dos estilos de Paneles de Control Virtual en LinuxCNC:
+As mentioned above, many of LinuxCNC's GUIs may be customised by the user. This may be done to add
+indicators, readouts, switches or sliders to the basic appearance of one of the GUIs for increased
+flexibility or functionality. Two styles of Virtual Control Panel are offered in LinuxCNC:
 
-<<cha:pyvcp,'PyVCP'>> un panel de control virtual basado en Python que se puede agregar a la GUI Axis. PyVCP utiliza solo señales virtuales contenidas dentro de la capa de abstracción de hardware HAL, como el indicador de velocidad del husillo o la señal de salida de Parada de Emergencia, y tiene una apariencia sencilla, sin lujos. Esto lo hace una excelente opción si el usuario desea agregar un Panel de Control Virtual con un mínimo esfuerzo.
+<<cha:pyvcp,'PyVCP'>>, a Python-based virtual control panel that can be added to the Axis GUI. PyVCP only
+utilises virtual signals contained within the Hardware Abstraction Layer, such as the spindle-at-speed
+indicator or the Emergency Stop output signal, and has a simple no-frills appearance. This makes it an
+excellent choice if the user wants to add a Virtual Control Panel with minimal fuss.
 
-image::../gui/images/axis-pyvcp.png[align="center", alt="PyVCP en Axis"]
+image::../gui/images/axis-pyvcp.png[align="center", alt="PyVCP with Axis"]
 
-<<cha:glade-vcp,'GladeVCP'>> un panel de control virtual basado en Glade que se puede agregar a las GUIs Axis o Touchy. GladeVCP tiene la ventaja sobre PyVCP en que no se limita a la visualización o control de señales virtuales HAL, sino que puede incluir otras interfaces externas fuera de LinuxCNC, como ventanas o eventos de redes. GladeVCP también es más flexible en cuanto a cómo se puede configurar para que aparezca en la GUI:
+<<cha:glade-vcp,'GladeVCP'>>, a Glade-based virtual control panel that can be added to the Axis or Touchy
+GUIs. GladeVCP has the advantage over PyVCP in that it is not limited to the display or control of HAL
+virtual signals, but can include other external interfaces outside LinuxCNC such as window or network
+events. GladeVCP is also more flexible in how it may be configured to appear on the GUI:
 
-image::../gui/images/axis-gladevcp.png[align="center", alt="GladeVCP con Axis"]
+image::../gui/images/axis-gladevcp.png[align="center", alt="GladeVCP with Axis"]
 
-== Idiomas
+== Languages
 
-LinuxCNC utiliza archivos de traducción para traducir las interfaces de usuario de LinuxCNC a muchos idiomas, incluidos francés, español, alemán, italiano, finlandés, ruso, rumano, portugués y chino. Suponiendo que una traducción ha sido creada, LinuxCNC usará automáticamente cualquier idioma nativo con el que inicie la sesión en el sistema operativo Linux. Si su idioma no ha sido traducido, contacte a un desarrollador en el IRC, la lista de correo o el Foro de usuarios para obtener ayuda.
+LinuxCNC uses translation files to translate LinuxCNC User Interfaces into many languages including French,
+German, Italian, Finnish, Russian, Romanian, Portuguese and Chinese.  Assuming a translation has been
+created, LinuxCNC will automatically use whatever native language you log in with when starting the Linux
+operating system. If your language has not been translated, contact a developer on the IRC, the mailing
+list or the User Forum for assistance.
 
-== Modos de operacion
+== Modes of Operation
 
-Cuando LinuxCNC se está ejecutando, hay tres modos principales, diferentes entre si, utilizados para ingresar comandos. Son los modos manual, automático y MDI (entrada manual de datos). Al cambiar de un modo a otro, hay una gran diferencia en la forma en que se comporta LinuxCNC. Hay cosas específicas que se pueden hacer en un modo y que no pueden hacerse en otro. Un operador puede hacer home en un eje en modo manual pero no en modo automático o MDI, o puede hacer que la máquina ejecute un archivo completo de código G en el modo automático pero no en manual o MDI.
+When LinuxCNC is running, there are three different major modes used for inputting commands. These are
+Manual, Auto, and Manual Data Input (MDI). Changing from one mode to another makes a big difference in the
+way that the LinuxCNC control behaves. There are specific things that can be done in one mode that cannot
+be done in another. An operator can home an axis in manual mode but not in auto or MDI modes. An operator
+can cause the machine to execute a whole file full of G-codes in the auto mode but not in manual or MDI.
 
-En el modo manual, cada comando se ingresa por separado. En términos humanos, un comando manual podría ser encender el refrigerante o mover el eje X a 25 pulgadas por minuto. Estos serian, más o menos, equivalentes a pulsar un interruptor o girar el volante de un eje. Estos comandos se manejan normalmente en una de las interfaces gráficas, presionando un botón con el mouse o presionando una tecla en el teclado. En el modo automático, un botón similar o presionar una tecla podría usarse para cargar o iniciar la ejecución de un programa completo de código G almacenado en un archivo. En el Modo MDI, el operador puede escribir un bloque de código y decirle a la máquina que lo ejecute al presionar en el teclado <return> o <enter>.
+In manual mode, each command is entered separately. In human terms a manual command might be turn on
+coolant or jog X at 25 inches per minute. These are roughly equivalent to flipping a switch or turning the
+hand wheel for an axis. These commands are normally handled on one of the graphical interfaces by pressing
+a button with the mouse or holding down a key on the keyboard. In auto mode, a similar button or key press
+might be used to load or start the running of a whole program of G-code that is stored in a file. In the
+MDI mode the operator might type in a block of code and tell the machine to execute it by pressing the
+<return> or <enter> key on the keyboard.
 
-Algunos comandos de control de movimiento están disponibles en todo momento y causarán los mismos cambios de movimiento en todos los modos. Estos incluyen Abort (abortar), Emergency Stop (parada de emergencia) y Feed Rate Override (mando manual de alimentacion). Comandos como estos deben ser en si mismos explicativos.
+Some motion control commands are available concurrently and will cause the same changes in motion in all
+modes. These include Abort, Emergency Stop, and Feed Rate Override. Commands like these should be self
+explanatory.
 
-La interfaz de usuario AXIS oculta algunas de las distinciones entre Auto y los otros modos, haciendo disponibles comandos Auto en muchas ocasiones. También difumina la distinción entre Manual y MDI porque algunos de los comandos manuales como Touch Off se implementan realmente mediante el envío de comandos MDI. Esto lo hace cambiando automáticamente al modo que se necesite para la acción que el usuario ha solicitado.
+The AXIS user interface hides some of the distinctions between Auto and the other modes by making
+Auto-commands available at most times. It also blurs the distinction between Manual and MDI because some
+Manual commands like Touch Off are actually implemented by sending MDI commands. It does this by
+automatically changing to the mode that is needed for the action the user has requested.
