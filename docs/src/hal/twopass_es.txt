@@ -1,183 +1,141 @@
-:lang: es
-
 [[cha:hal-twopass]]
 
 = HAL TWOPASS
 
 == TWOPASS
 
-Desde LinuxCNC 2.5 se admite el procesamiento TWOPASS de archivos de configuración hal.
-Esto puede ayudar a la modularización y legibilidad de los archivos hal.
-(Los archivos Hal se especifican en un archivo ini en la sección HAL
-como [HAL]HALFILE = nombre de archivo).
+LinuxCNC 2.5 supports TWOPASS processing of hal configuration files
+that can help in the modularization and readability of hal files.
+(Hal files are specified in an LinuxCNC ini file in the HAL stanza
+as [HAL]HALFILE=filename).
 
-Normalmente, un conjunto de uno o más archivos de configuración hal deben usar
-una única línea, en uno de los archivos, para cargar un módulo de kernel que puede
-manejar múltiples instancias de un componente. Por ejemplo, si usted
-usa tres componentes AND de dos entradas (and2) en tres lugares diferentes
-en su configuración, bastará una sola línea en algún lugar para especificarlo:
+Normally, a set of one or more hal configuration files must use
+a single, unique loadrt line to load a kernel module that may
+handle multiple instances of a component.  For example, if you
+use a two input AND gate component (and2) in three different
+places in your setup, you would need to have a single line
+somewhere to specify:
 
 ----
-loadrt and2 count=3
+   loadrt and2 count=3
 ----
 
-resultando los componentes and2.0, and2.1 y and2.2.
+resulting in components and2.0, and2.1, and2.2.
 
-Las configuraciones son más legibles si especifican con
-names=opción en aquellos componentes donde se admita, por ejemplo:
+Configurations are more readable if you specify with the
+names=option for components where it is supported, e.g.,:
 
 ----
 loadrt and2 names=aa,ab,ac
 ----
 
-dando como resultado las instancias de componente aa, ab y ac.
+resulting in components aa,ab,ac.
 
-Al realizar un seguimiento de los componentes y sus nombres, puede darse un problema de mantenimiento 
-cuando agrega (o elimina) un componente. Debe encontrar y actualizar la directiva loadrt única aplicable al
-componente.
+It can be a maintenance problem to keep track of the components
+and their names since when you add (or remove) a component, you
+must find and update the single loadrt directive applicable to
+the component.
 
-El procesamiento TWOPASS se habilita al incluir un parámetro de archivo ini en
-la sección [HAL]:
-
-----
-[HAL]
-
-TWOPASS = cualquier-cadena
-----
-
-Donde "cualquier-cadena" puede ser cualquier cadena que no sea nula.
-Con esta configuración, puede tener múltiples especificaciones como:
-
-----
-loadrt and2 names = aa
-...
-loadrt and2 names = ab, ac
-...
-loadrt and2 names = ad
-----
-
-Estos comandos pueden aparecer en HALFILES diferentes. Los HALFILES
-se procesan en el orden de su aparición en el archivo ini.
-
-La opción TWOPASS se puede especificar con opciones para ampliar la salida para
-depuración (verbose) o para evitar la eliminación de archivos temporales (nodelete).
-Las opciones están separadas por comas.
-
-Ejemplo:
+TWOPASS processing is enabled by including an ini file parameter in
+the [HAL] section:
 
 ----
 [HAL]
 
-TWOPASS = on, verbose, nodelete
+TWOPASS = anystring
 ----
 
-
-Con el procesamiento de TWOPASS, todos los [HAL]HALFILES se leen primero y
-se acumulan las apariciones múltiples de las directivas loadrt para cada módulo.
-No se ejecutan comandos hal en esta pasada inicial.
-
-Después de la pasada inicial, los módulos se cargan automáticamente
-con un número de instancias igual al número total, resultado de la opcion 'count =',
-o con todos los nombres individuales especificados al usar la opcion 'names ='.
-
-Luego se hace una segunda pasada para ejecutar todas las demás
-instrucciones HAL especificadas en los HALFILES. Los comandos addf que
-asocian las funciones de un componente con los hilos de ejecución, son
-ejecutadas en el orden de aparición con otros comandos durante
-esta segunda pasada.
-
-Si bien puede usar las opciones count = o names =, éstas son
-mutuamente excluyentes - solo se puede especificar un tipo para un
-módulo dado.
-
-El procesamiento TWOPASS es más efectivo cuando se usan opciones 'names ='.
-Esta opción le permite proporcionar nombres únicos que
-son mnemotécnicos o relevantes para la configuración. Por
-ejemplo, si utiliza un componente derivativo para estimar la
-velocidades y aceleraciones en cada coordenada (x, y, z), usando
-el método 'count =' dará nombres de componentes poco significativos, como ddt.0,
-ddt.1, ddt.2, etc.
-
-Alternativamente, usando los 'names =', como:
+Where "anystring" can be any non-null string.
+With this setting, you can have multiple specifications like:
 
 ----
-loadrt dd names = xvel, yvel, zvel
+loadrt and2 names=aa
 ...
-loadrt dd names = xacel, yacel, zacel
+loadrt and2 names=ab,ac
+...
+loadrt and2 names=ad
 ----
 
-resultan componentes llamados xvel, yvel, zvel, xacel, yacel, zacel.
+These commands can appear in different HALFILES.  The HALFILES
+are processed in the order of their appearance in the ini file.
 
-Muchos componentes suministrados con la distribución se crean con una
-utilidad de creacion de componentes y soportan la opción names =. Estos incluyen los
-componentes lógicos comunes que son el "'pegamento'" de muchas configuraciones hal.
+The TWOPASS option can be specified with options to add output for
+debugging (verbose) and to prevent deletion of temporary files (nodelete).
+The options are separated with commas.
 
-Los componentes creados por el usuario que usan la utilidad soportan automáticamente
-la opción names =. Además de los componentes generados
-con la utilidad, muchos otros componentes admiten la opción names =,
-entre ellos:at_pid, encoder, encoder_ratio, pid, siggen, y sim_encoder.
+Example:
 
-El procesamiento en dos pasos ocurre antes de la carga de la interfaz gráfica de usuario. Cuando se utiliza un
-[HAL]POSTGUI_HALFILE, es conveniente colocar todo las
-declaraciones loadrt para los componentes necesarios en un halfile que se carge con anterioridad.
-
-Ejemplo de una sección HAL cuando se usa un POSTGUI_HALFILE:
 ----
 [HAL]
 
-TWOPASS = on
-HALFILE = core_sim.hal
-HALFILE = sim_spindle_encoder.hal
-HALFILE = axis_manualtoolchange.hal
-HALFILE = simulated_home.hal
-HALFILE = load_for_postgui.hal <- líneas loadrt para componentes en postgui.hal
-
-POSTGUI_HALFILE = postgui.hal
-HALUI = halui
+TWOPASS = on,verbose,nodelete
 ----
 
-== Excluyendo archivos .hal
 
-El procesamiento TWOPASS convierte los archivos '.hal' en archivos '.tcl' equivalentes y utiliza
-haltcl para encontrar los comandos loadrt y addf para acumularlos y consolidar
-su uso. Se esperan parámetros de loadrt que se ajustan a los parámetros 'nombres =' (o
- 'count =') aceptados por el generador de componentes HAL ('halcompile').
-Los elementos de parámetros más complejos incluidos en componentes hal especializados +
-no puede ser manejado adecuadamente.
-
-Un archivo '.hal' puede ser excluido del procesamiento TWOPASS incluyendo una
-línea de comentarios especial en cualquier lugar del archivo. La línea de comentario debe comenzar
-con la cadena: '#NOTWOPASS'. Los archivos especificados con este comentario son
-tratados por halcmd usando las opciones '-k' (seguir adelante en caso de fallo) y '-v' (verbose).
-
-Esta disposición de exclusión se puede utilizar para aislar problemas o para cargar cualquier
-componente hal que no requiere o no se beneficia del procesamiento TWOPASS que maneja
-múltiples instancias de componentes loadrt.
-
-Ejemplo de archivo '.hal' excluido:
-----
-$ cat twopass_excluded.hal
-# El siguiente 'comentario mágico' hace que este archivo
-# sea excluido del procesamiento de dos fases:
-# NOTWOPASS
-
-loadrt mycomponent parm1="abc def" parm2=ghi
-show pin mycomponent
-----
+With TWOPASS processing, all [HAL]HALFILES are first read and
+multiple appearances of loadrt directives for each module are
+accumulated.  User components (loadusr) are loaded in order
+but no other hal commands are executed in the initial pass.
 
 [NOTE]
-   El caso y los espacios en blanco dentro de # NOTWOPASS se ignoran.
+
+User components should use the wait (-W) option to ensure
+the component is ready before other commands are executed.
+
+After the initial pass, the realtime modules are loaded (loadrt)
+automatically with a number equal to the total number when using
+the count= option or with all of the individual names specified
+when using the names= option.
+
+A second pass is then made to execute all of the other hal
+instructions specified in the HALFILES.  The addf commands that
+associate a component's functions with thread execution are
+executed in the order of appearance with other commands during
+this second pass.
+
+While you can use either the count= or names= options, they are
+mutually exclusive -- only one type can  be specified for a
+given module.
+
+TWOPASS processing is most effective when using the names=
+option.  This option allows you to provide unique names that
+are mnemonic or otherwise relevant to the configuration.   For
+example, if you use a derivative component to estimate the
+velocities and accelerations on each (x,y,z) coordinate, using
+the count= method will give arcane component names like ddt.0,
+ddt.1, ddt.2, etc.
+
+Alternatively, using the names= option like:
+
+----
+loadrt ddt names=xvel,yvel,zvel
+...
+loadrt ddt names=xaccel,yaccel,zaccel
+----
+
+results in components sensibly named xvel,yvel,zvel, xaccel,yaccel,zaccel.
+
+Many comps supplied with the distribution are created with the
+halcompile utility and support the names= option.  These include the
+common logic components that are the glue of many hal configurations.
+
+User-created comps that use the halcompile utility automatically
+support the names= option as well.  In addition to comps generated
+with the halcompile utility, numerous other comps support the names=option.
+Comps that support names= option include: at_pid, encoder,
+encoder_ratio, pid, siggen, and sim_encoder.
 
 == Post GUI
 
-Algunas GUIs soportan halfiles que se procesan después de que se inicie la GUI, permitiendo
-conectar los pines hal que son creados por la propia GUI. Cuando se utiliza un halfile postgui con
-el procesamiento TWOPASS, incluya todos los elementos loadrt para los componentes agregados por los halfiles postgui
-en un halfile separado que se procese antes que la GUI. Los comandos addf también pueden
-ser incluido en el archivo.
-Ejemplo:
+Some GUIs support halfiles that are processed after the GUI is started in order
+to connect hal pins that are created by the GUI.  When using a postgui halfile with
+TWOPASS processing, include all loadrt items for components added by postgui halfiles
+in a separate halfile that is processed before the GUI.  The addf commands can also
+be included in the file.
+Example:
 ----
 [HAL]
+TWOPASS = on
 HALFILE = file_1.hal
 ...
 HALFILE = file_n.hal
@@ -186,11 +144,65 @@ HALFILE = file_with_all_loads_for_postgui.hal
 POSTGUI_HALFILE = the_postgui_file.hal
 ----
 
-== Ejemplos
+== Exluding .hal files
 
-Se incluyen ejemplos de uso de TWOPASS para simulador en los directorios:
+TWOPASS processing converts '.hal' files to equivalent '.tcl' files and uses
+haltcl to find loadrt and addf commands in order to accumulate and consolidate
+their usage.  Loadrt parameters that conform to the simple 'names=' (or
+'count=') parameters accepted by the HAL Component Generator ('halcompile') are
+expected.  More complex parameter items included in specialized hal components
+may not be handled properly.
+
+A '.hal' file may be excluded from TWOPASS processing by including a magic
+comment line anywhere in the '.hal' file.   The magic comment line must begin
+with the string: '#NOTWOPASS'.  Files specified with this magic comment are
+sourced by halcmd using the '-k' (keep going if failure) and '-v' (verbose)
+options.
+
+This exclusion provision can be used to isolate problems or for loading any
+special hal component that does not require or benefit from TWOPASS processing.
+
+Ordinarily, the loadrt ordering of realtime components is not critical,
+but loadrt ordering for special components can be enforced by placing the
+such loadrt directives in an excluded file.
+
+[NOTE]
+
+While the order of loadrt directives is not usually critical,
+ordering of addf directives is often very important for proper
+operation of servo loop components.
+
+Excluded '.hal' file example:
+----
+$ cat twopass_excluded.hal
+# The following magic comment causes this file to
+# be excluded from twopass processing:
+# NOTWOPASS
+
+# debugging component with complex options:
+loadrt mycomponent parm1="abc def" parm2=ghi
+show pin mycomponent
+
+# ordering special components
+loadrt component_1
+loadrt component_2
+----
+
+[NOTE]
+
+Case and whitespace within the magic comment are ignored.  The loading of
+components that use names= or count= parameters (typically built by
+halcompile) should not be used in excluded files as that would eliminate
+the benefits of TWOPASS processing.  The hal commands that create signals
+(net) and commands that establish execution order (addf) should not be
+placed in excluded files.  This is especially true for addf commands since
+their ordering may be important.
+
+
+== Examples
+
+Examples of TWOPASS usage for a simulator are included in the directories:
 
    configs/sim/axis/twopass/
 
    configs/sim/axis/simtcl/
-
