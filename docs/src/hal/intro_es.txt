@@ -1,380 +1,377 @@
-:lang: es
-
 [[cha:hal-introduction]]
 
-= Introducción a HAL
+= HAL Introduction
 
-HAL(((HAL))) significa 'capa de abstracción de hardware'. Al más alto
-nivel, es simplemente una manera de permitir que una serie de 'bloques de construcción'
-sean cargados e interconectados para ensamblar un sistema complejo. El termino 'hardware'
-es porque HAL fue diseñado originalmente para que fuese fácil
-configurar LinuxCNC para una amplia variedad de dispositivos de hardware. Mucho de
-los bloques de construcción son controladores de dispositivos hardware. Sin embargo, HAL puede hacer
-más que configurar controladores hardware.
+HAL(((HAL))) stands for Hardware Abstraction Layer. At the highest
+level, it is simply a way to allow a number of 'building blocks' to be
+loaded and interconnected to assemble a complex system. The 'Hardware'
+part is because HAL was originally designed to make it easier to
+configure LinuxCNC for a wide variety of hardware devices. Many of the
+building blocks are drivers for hardware devices. However, HAL can do
+more than just configure hardware drivers.
 
-== HAL se basa en técnicas de diseño de sistemas tradicionales
+== HAL is based on traditional system design techniques
 
-HAL se basa en los mismos principios que se utilizan para diseñar circuitos y sistemas 
-hardware, por lo que es útil examinar primero esos principios.
+HAL is based on the same principles that are used to design hardware
+circuits and systems, so it is useful to examine those principles
+first.
 
-Cualquier sistema (incluida una máquina CNC(((CNC))), consiste en
-componentes interconectados. Para una máquina CNC, esos componentes podrían
-ser el controlador principal, servoamplificadores o drivers de pasos, motores, codificadores,
-interruptores de límite, volantes con pulsadores (los populares MPG), quizás un VFD para el husillo, un PLC para 
-manejar un cambiador de herramientas, etc. El creador de la máquina debe
-seleccionar, montar y conectar estas piezas para formar un sistema completo.
+Any system (including a CNC(((CNC))) machine), consists of
+interconnected components. For the CNC machine, those components might
+be the main controller, servo amps or stepper drives, motors, encoders,
+limit switches, pushbutton pendants, perhaps a VFD for the spindle
+drive, a PLC to run a toolchanger, etc. The machine builder must
+select, mount and wire these pieces together to make a complete system.
 
-
-.Concepto HAL - Conexiones como en un circuito electrico.
+.HAL Concept - Connecting like elctrical circuits.
 image::images/hal_circuit_concept.png["HAL Circuit Concept",align="left"]
 
-La figura se transcribe a codigo HAL de esta manera: 
+Figure one would be written in HAL code like this: 
 
 ----
 net signal-blue    component.0.pin1-in      component.1.pin1-out
 net signal-red     component.0.pin3-out     component.1.pin3-in     component.1.pin4-in
 ----
 
-=== Selección de componentes
+=== Part Selection
 
-El constructor de una máquina no necesita preocuparse de cómo funciona cada componente
-individualmente. Se tratan como cajas negras. Durante la etapa de diseño, se
-decide qué componentes se usarán: steppers o servos, que
-marca de servo-amplificador, qué tipo de interruptores de límite y cuántos, etc.
-Las decisiones del integrador sobre qué componentes específicos usar se basaran
-en lo que hace ese componente y las especificaciones suministradas por el
-fabricante del mismo. El tamaño de un motor y la carga que debe mover afectará a la 
-elección del amplificador necesario para manejarlo. La elección
-del amplificador puede afectar al tipo de retroalimentación necesario y a las
-señales de velocidad o posición que deben enviarse al propio amplificador desde el
-controlador.
+The machine builder does not need to worry about how each individual
+part works. He treats them as black boxes. During the design stage, he
+decides which parts he is going to use - steppers or servos, which
+brand of servo amp, what kind of limit switches and how many, etc. The
+integrator's decisions about which specific components to use is based
+on what that component does and the specifications supplied by the
+manufacturer of the device. The size of a motor and the load it must
+drive will affect the choice of amplifier needed to run it. The choice
+of amplifier may affect the kinds of feedback needed by the amp and the
+velocity or position signals that must be sent to the amp from a
+control.
 
-De igual forma, en el mundo HAL el integrador debe decidir qué componentes HAL son
-necesarios. Por lo general, cada tarjeta de interfaz requerirá un controlador.  
-Pueden ser necesarios componentes adicionales para la generación de pulsos de pasos por software,
-funcionalidad PLC, y una amplia variedad de otras tareas.
+In the HAL world, the integrator must decide what HAL components are
+needed. Usually every interface card will require a driver. Additional
+components may be needed for software generation of step pulses, PLC
+functionality, and a wide variety of other tasks.
 
-=== Diseño de interconexiones
+=== Interconnection Design
 
-El diseñador de un sistema hardware no solo selecciona los componentes; también
-decide cómo interconectarlos. Cada caja negra tiene
-terminales, quizás solo dos como en un simple interruptor, o docenas para una unidad servo
-o un PLC. Los componentes necesitan estar interconectados. Los motores se conectan a los
-servo-amplificadores, los interruptores de límite se conectan al controlador, y así sucesivamente. Conforme
-el constructor de la máquina trabaja en el diseño, crea un diagrama de cableado completo
-que muestra cómo deben estar interconectados todos los componentes.
+The designer of a hardware system not only selects the parts, he also
+decides how those parts will be interconnected. Each black box has
+terminals, perhaps only two for a simple switch, or dozens for a servo
+drive or PLC. They need to be wired together. The motors connect to the
+servo amps, the limit switches connect to the controller, and so on. As
+the machine builder works on the design, he creates a large wiring
+diagram that shows how all the parts should be interconnected.
 
-En HAL, los cables son las "señales". Cuando se usa HAL, los componentes software están interconectados por señales.
-El diseñador debe decidir qué señales son necesarias y como deben conectarse.
+When using HAL, components are interconnected by signals. The designer
+must decide which signals are needed, and what they should connect.
 
-=== Implementación
+=== Implementation
 
-Una vez que se completa el diagrama de cableado, es hora de construir la máquina.
-Las piezas deben ser adquiridas y montadas, y luego son
-interconectadas de acuerdo con el diagrama de cableado. En un sistema físico,
-cada interconexión es una trozo de cable, con unas caracteristicas determinadas, que deben
-conectarse a los terminales apropiados.
+Once the wiring diagram is complete it is time to build the machine.
+The pieces need to be acquired and mounted, and then they are
+interconnected according to the wiring diagram. In a physical system,
+each interconnection is a piece of wire that needs to be cut and
+connected to the appropriate terminals.
 
-HAL proporciona una serie de herramientas para ayudar a 'construir' un sistema HAL. Algunas de
-las herramientas le permiten 'conectar' (o desconectar) un solo 'cable'. Otras
-herramientas le permiten guardar una lista completa de todos los componentes, cables y
-otra información sobre el sistema, para que pueda ser 'reconstruido' con un
-solo comando.
+HAL provides a number of tools to help 'build' a HAL system. Some of
+the tools allow you to 'connect' (or disconnect) a single 'wire'. Other
+tools allow you to save a complete list of all the parts, wires, and
+other information about the system, so that it can be 'rebuilt' with a
+single command.
 
-=== Pruebas
+=== Testing
 
-Muy pocas máquinas funcionan bien la primera vez. Mientras hace las pruebas pertinentes, el
-constructor puede usar un tester para ver si un interruptor de límite está funcionando o para
-medir la tensión de CC que va a un servomotor. Puede conectar un
-osciloscopio para verificar la sintonización de un driver, o para buscar
-ruido electrico. Puede encontrar un problema que requiera cambios en el diagrama de cableado;
-tal vez un componente debe estar conectado de manera diferente o ser reemplazado
-con otro completamente diferente.
+Very few machines work right the first time. While testing, the
+builder may use a meter to see whether a limit switch is working or to
+measure the DC voltage going to a servo motor. He may hook up an
+oscilloscope to check the tuning of a drive, or to look for electrical
+noise. He may find a problem that requires the wiring diagram to be
+changed; perhaps a part needs to be connected differently or replaced
+with something completely different.
 
-HAL proporciona los equivalentes software de un voltímetro, un osciloscopio,
-un generador de señales y otras herramientas necesarias para probar y ajustar un
-sistema. Los mismos comandos utilizados para construir el sistema se pueden usar para hacer
-cambios según sea necesario.
+HAL provides the software equivalents of a voltmeter, oscilloscope,
+signal generator, and other tools needed for testing and tuning a
+system. The same commands used to build the system can be used to make
+changes as needed.
 
-=== Resumen
+=== Summary
 
-Este documento está dirigido a personas que ya saben cómo hacer este tipo
-de integración de sistemas hardware, pero que no saben cómo conectar el
-hardware a LinuxCNC. Vea la sección <<sec:halui-remote-start,Ejemplo de Arranque remoto>> en
-la documentación de Ejemplos UI HAL.
+This document is aimed at people who already know how to do this kind
+of hardware system integration, but who do not know how to connect the
+hardware to LinuxCNC. See the <<sec:halui-remote-start,Remote Start
+Example>> section in the HAL UI Examples documentation.
 
-image::images/remote-start.png[alt="Ejemplo de inicio remoto"]
+image::images/remote-start.png[alt="Remote Start Example"]
 
-El diseño de hardware tradicional, como se ha descrito arriba, termina en el limite del
-control principal. Fuera del control (el pc) hay un grupo relativamente simple de
-cajas, conectadas entre sí para hacer lo que se ha previsto que hagan. En el interior (el pc), el control
-es un gran misterio; una enorme caja negra que esperamos funcione.
+The traditional hardware design as described above ends at the edge of
+the main control. Outside the control are a bunch of relatively simple
+boxes, connected together to do whatever is needed. Inside, the control
+is a big mystery -- one huge black box that we hope works.
 
-HAL extiende este método de diseño de hardware tradicional al interior de
-la gran caja negra. Hace de los controladores de dispositivos, e incluso algunas partes internas
-del controlador, cajas negras más pequeñas que se pueden interconectar,
-e incluso reemplazar al igual que el hardware externo. HAL permite un
-'diagrama de cableado del sistema' que mostrará parte del controlador interno, en lugar de
-una gran caja negra. Y lo más importante; permite que
-el integrador pruebe y modifique el controlador utilizando los mismos métodos que
-usaría en el resto del hardware.
+HAL extends this traditional hardware design method to the inside of
+the big black box. It makes device drivers and even some internal parts
+of the controller into smaller black boxes that can be interconnected
+and even replaced just like the external hardware. It allows the
+'system wiring diagram' to show part of the internal controller, rather
+than just a big black box. And most importantly, it allows the
+integrator to test and modify the controller using the same methods he
+would use on the rest of the hardware.
 
-Para la mayoría de los integradores son familiares términos como motores, amplificadores y codificadores. 
-Cuando hablamos de usar ocho conductores extraflexibles
-de cable blindado para conectar un codificador a la placa de entrada del servo en la
-computadora, el lector comprende de inmediato lo que es y le lleva a
-preguntas del tipo '¿qué tipo de conectores necesitaré en cada extremo?'. 
-El mismo tipo de pensamiento es esencial para HAL, pero ese hilo de pensamiento específico 
-puede tardar un poco en ponerse en marcha. Usando HAL, las palabras pueden parecer un poco 
-extrañas al principio, pero el concepto de trabajar desde una conexión a la siguiente es el mismo.
+Terms like motors, amps, and encoders are familiar to most machine
+integrators. When we talk about using extra flexible eight conductor
+shielded cable to connect an encoder to the servo input board in the
+computer, the reader immediately understands what it is and is led to
+the question, 'what kinds of connectors will I need to make up each
+end.' The same sort of thinking is essential for the HAL but the
+specific train of thought may take a bit to get on track. Using HAL
+words may seem a bit strange at first, but the concept of working from
+one connection to the next is the same.
 
-Esta idea de extender el diagrama de cableado al interior del
-controlador es la adoptada por HAL. Si se siente cómodo con la
-idea de interconectar cajas negras de hardware, es probable que tenga
-pocos problemas al utilizar HAL para interconectar cajas negras software.
+This idea of extending the wiring diagram to the inside of the
+controller is what HAL is all about. If you are comfortable with the
+idea of interconnecting hardware black boxes, you will probably have
+little trouble using HAL to interconnect software black boxes.
 
-== Conceptos HAL 
+== HAL Concepts
 
-Esta sección es un glosario que define los términos clave HAL, aunque es un poco
-diferente de un glosario tradicional porque estos términos no estan
-ordenados alfabéticamente sino por su relación o
-flujo dentro de la manera de hacer las cosas con HAL.
+This section is a glossary that defines key HAL terms but it is a bit
+different than a traditional glossary because these terms are not
+arranged in alphabetical order. They are arranged by their relationship
+or flow in the HAL way of things.
 
-Componente::
-     (((HAL Component))) Cuando hablamos de diseño de hardware, nos referimos
-    a las piezas individuales como 'partes', 'bloques de construcción', 'cajas negras',
-    etc. El equivalente HAL es un 'componente' o 'componente HAL'. (Esta
-    documento utiliza 'componente HAL' cuando es posible que haya confusión con
-    otros tipos de componentes, pero normalmente solo usa la palabra 'componente'.)
-    Un componente HAL es una pieza de software con entradas, salidas y
-    comportamiento definido, que se puede instalar e interconectar según sea necesario.
+Component::
+     (((HAL Component)))When we talked about hardware design, we referred
+    to the individual pieces as 'parts', 'building blocks', 'black boxes',
+    etc. The HAL equivalent is a 'component' or 'HAL component'. (This
+    document uses 'HAL component' when there is likely to be confusion with
+    other kinds of components, but normally just uses 'component'.) A HAL
+    component is a piece of software with well-defined inputs, outputs, and
+    behavior, that can be installed and interconnected as needed. 
 
-Parámetro::
-     (((Parámetro HAL))) Muchos componentes de hardware tienen mandos de ajustes que
-    no están conectados a ningún otro componente, pero que deben tener alguna forma de
-    acceso. Por ejemplo, los servoamplificadores a menudo tienen potenciometros, para permitir
-    el afinado de su ajuste, y puntos de prueba donde puede ser conectado un medidor u osciloscopio 
-    para ver los resultados del ajuste. Los componentes HAL también pueden tener tales
-    cosas, que se conocen como 'parámetros'. Hay dos tipos de
-    parámetros: los parámetros de entrada son equivalentes a potenciometros; son
-    valores que pueden ser ajustados por el usuario, y permanecen fijos si no son ajustados
-    de nuevo. Los parámetros de salida no pueden ser ajustados por el usuario; son
-    equivalente a los puntos de prueba que permiten monitorizar las señales internas.
+Parameter::
+     (((HAL Parameter)))Many hardware components have adjustments that
+    are not connected to any other components but still need to be
+    accessed. For example, servo amps often have trim pots to allow for
+    tuning adjustments, and test points where a meter or scope can be
+    attached to view the tuning results. HAL components also can have such
+    items, which are referred to as 'parameters'. There are two types of
+    parameters: Input parameters are equivalent to trim pots - they are
+    values that can be adjusted by the user, and remain fixed once they are
+    set. Output parameters cannot be adjusted by the user - they are
+    equivalent to test points that allow internal signals to be monitored.
 
 Pin::
-     (((HAL Pin))) Los componentes hardware tienen terminales que se utilizan para
-    interconectarlos. El equivalente HAL es un "pin" o "pin HAL" (se usara 'pin HAL' 
-    cuando sea necesario para evitar confusiones). Todos los pines HAL tienen nombre
-    y esos nombres de pines se usan para interconectarlos. Los pines HAL son
-    entidades de software que existen solo dentro de la computadora.
+     (((HAL Pin)))Hardware components have terminals which are used to
+    interconnect them. The HAL equivalent is a 'pin' or 'HAL pin'. ('HAL
+    pin' is used when needed to avoid confusion.) All HAL pins are named,
+    and the pin names are used when interconnecting them. HAL pins are
+    software entities that exist only inside the computer. 
 
-Pin fisico::
-     (((HAL Physical-Pin))) Muchos dispositivos de E/S tienen pines físicos reales o
-    terminales que se conectan a hardware externo. Por ejemplo, los pines del
-    conector de puerto paralelo. Para evitar confusiones, estos se conocen como
-    'Pines físicos'. Son esas cosas que se "enchufan" en el mundo real.
+Physical_Pin::
+     (((HAL Physical-Pin)))Many I/O devices have real physical pins or
+    terminals that connect to external hardware, for example the pins of a
+    parallel port connector. To avoid confusion, these are referred to as
+    'physical pins'. These are the things that 'stick out' into the real
+    world.
 
-Señal::
-     (((HAL Signal))) En una máquina física, los terminales reales
-    de los componentes de hardware están interconectados por cables. El equivalente HAL de
-    un cable es una 'señal' o 'señal HAL'. Las señales HAL conectan los pines HAL
-    según lo requiera el constructor de la máquina. Las señales HAL pueden ser
-    desconectadas y reconectadas a voluntad (incluso cuando la máquina está
-    funcionando).
+Signal::
+     (((HAL Signal)))In a physical machine, the terminals of real
+    hardware components are interconnected by wires. The HAL equivalent of
+    a wire is a 'signal' or 'HAL signal'. HAL signals connect HAL pins
+    together as required by the machine builder. HAL signals can be
+    disconnected and reconnected at will (even while the machine is
+    running).
 
-Tipo::
-     (((Tipo HAL))) Cuando se usa hardware real, no se conectaría una
-    salida de relé de 24 volt a una entrada analógica +/-10V de un servoamplificador. Los pines HAL
-    tienen las mismas restricciones, que se basan en su tipo. Tanto los pines
-    como las señales tienen tipos, y las señales solo se pueden conectar a pines del
-    mismo tipo. Actualmente hay 4 tipos, que son los siguientes:
+Type::
+     (((HAL Type)))When using real hardware, you would not connect a 24
+    volt relay output to the +/-10V analog input of a servo amp. HAL pins
+    have the same restrictions, which are based upon their type. Both pins
+    and signals have types, and signals can only be connected to pins of
+    the same type. Currently there are 4 types, as follows:
 
- - bit - un único valor, VERDADERO/FALSO o ENCENDIDO/APAGADO o 1/0
- - float - un valor de punto flotante de 64 bits, con aproximadamente 53 bits de
-   resolución y más de 1000 bits de rango dinámico.
- - u32 - un entero sin signo de 32 bits, los valores legales son de 0 a 4.294.967.295
- - s32 - un entero de 32 bits con signo, los valores legales son de -2.147.483.647 a
-   +2.147.483.647
+ - bit - a single TRUE/FALSE or ON/OFF value
+ - float - a 64 bit floating point value, with approximately 53 bits of
+   resolution and over 1000 bits of dynamic range.
+ - u32 - a 32 bit unsigned integer, legal values are 0 to 4,294,967,295
+ - s32 - a 32 bit signed integer, legal values are -2,147,483,647 to
+   +2,147,483,647
 
-Función::
-    Los componentes de hardware reales tienden a
-    actuar de inmediato ante una entrada. Por ejemplo, si el voltaje de entrada a un
-    servoamplificador cambia, la salida también cambia automáticamente. Sin embargo,
-    los componentes de software no pueden actuar "automáticamente". Cada componente tiene un
-    código específico que se debe ejecutar para hacer lo que ese componente se
-    supone debe hacer. En algunos casos, ese código simplemente se ejecuta como parte del
-    componente. Por otra parte, en la mayoría de los casos, especialmente en componentes en tiempo real,
-    el código debe ejecutarse en una secuencia específica y en intervalos específicos.
-    Por ejemplo, las entradas deben leerse antes de realizar los cálculos con los
-    datos de entrada, y las salidas no deben escribirse hasta que los cálculos
-    esten hechos. En estos casos, el código está disponible para el sistema en
-    la forma de una o más 'funciones'. Cada función es un bloque de código
-    que realiza una acción específica. El integrador de sistema puede usar
-    'hilos' para programar una serie de funciones que serán ejecutadas en un
-    orden particular y en intervalos de tiempo específicos.
+Function::
+    Real hardware components tend to
+    act immediately on their inputs. For example, if the input voltage to a
+    servo amp changes, the output also changes automatically. However
+    software components cannot act 'automatically'. Each component has
+    specific code that must be executed to do whatever that component is
+    supposed to do. In some cases, that code simply runs as part of the
+    component. However in most cases, especially in realtime components,
+    the code must run in a specific sequence and at specific intervals. For
+    example, inputs should be read before calculations are performed on the
+    input data, and outputs should not be written until the calculations
+    are done. In these cases, the code is made available to the system in
+    the form of one or more 'functions'. Each function is a block of code
+    that performs a specific action. The system integrator can use
+    'threads' to schedule a series of functions to be executed in a
+    particular order and at specific time intervals.
 
-Hilo::
-    Un 'hilo' es una lista de funciones que
-    se ejecuta en intervalos específicos como parte de una tarea en tiempo real. Cuando un hilo es
-    creado por primera vez, tiene un intervalo de tiempo específico (período), pero no tiene
-    funciones. Las funciones se pueden agregar al hilo, y se ejecutarán
-    en orden cada vez que se ejecuta el hilo.
+Thread::
+    A 'thread' is a list of functions that
+    runs at specific intervals as part of a realtime task. When a thread is
+    first created, it has a specific time interval (period), but no
+    functions. Functions can be added to the thread, and will be executed
+    in order every time the thread runs.
 
-Como ejemplo, supongamos que tenemos un componente de puerto paralelo llamado hal_parport.
-Ese componente define uno o más pines HAL para cada pin físico. Los
-pines se describen en la sección de documentación de ese componente: sus nombres, cómo
-se relaciona cada pin HAL con pines físicos, si están invertidos, etc. 
-Eso por si solo no hace que los datos de los pines HAL lleguen
-a los pines físicos. Se necesita código para hacer eso, y ahí es donde entran en escena
-las funciones. El componente hal_parport necesita al menos
-dos funciones: una para leer los pines de entrada física y actualizar los pines HAL, 
-y otra para tomar datos de los pines HAL y escribirlo en
-pines de salida física. Ambas funciones son parte del driver parport.
+As an example, suppose we have a parport component named hal_parport.
+That component defines one or more HAL pins for each physical pin. The
+pins are described in that component's doc section: their names, how
+each pin relates to the physical pin, are they inverted, can you change
+polarity, etc. But that alone doesn't get the data from the HAL pins to
+the physical pins. It takes code to do that, and that is where
+functions come into the picture. The parport component needs at least
+two functions: one to read the physical input pins and update the HAL
+pins, the other to take data from the HAL pins and write it to the
+physical output pins. Both of these functions are part of the parport
+driver.
 
-== Componentes HAL
+== HAL components
 
-Cada componente HAL es una pieza de software con entradas,
-salidas y comportamiento bien definidos, que se pueden instalar e interconectar como sea
-necesario. Esta sección enumera algunos de los componentes disponibles y una breve
-descripción de lo que hace cada uno. Los detalles completos para cada componente estan
-disponible más adelante en este documento.
+Each HAL component is a piece of software with well-defined inputs,
+outputs, and behavior, that can be installed and interconnected as
+needed. This section lists some of the available components and a brief
+description of what each does. Complete details for each component are
+available later in this document.
 
-=== Programas externos con "enganches" HAL
-
-[NOTE]
-Un enganche, o "hook", es la parte de codigo de un programa destinada a interceptar 
-llamadas de función, mensajes o eventos pasados entre componentes de software.
+=== External Programs with HAL hooks
 
 motion::
-     (((motion))) Un módulo en tiempo real que acepta mensajes NML
-     footnote:[El Language Neutral de Mensajes NML proporciona un mecanismo para el manejo
-     de múltiples tipos de mensajes en el mismo búfer, así como simplifica
-     la interfaz para codificar y decodificar memorias intermedias en formato neutral y
-     su mecanismo de configuración.] de comandos de movimiento e interactúa con HAL
+     (((motion))) A realtime module that accepts NML
+     footnote:[Neutral Message Language provides a mechanism for handling
+     multiple types of messages in the same buffer as well as simplifying
+     the interface for encoding and decoding buffers in neutral format and
+     the configuration mechanism.] motion commands and interacts with HAL 
 
 iocontrol::
-     (((iocontrol))) Un módulo de espacio de usuario que acepta comandos de E/S NML e
-     interactúa con HAL
+     (((iocontrol))) A user space module that accepts NML I/O commands and
+    interacts with HAL 
 
 classicladder::
-     (((ClassicLadder))) Un PLC que usa HAL para todas sus E/S
+    (((ClassicLadder))) A PLC using HAL for all I/O
 
 halui::
-     (((halui))) Un programa de espacio de usuario que interactúa con HAL y envía comandos NML,
-     que está destinado a funcionar como una interfaz de usuario completa utilizando
-     botones e interruptores externos.
+     (((halui))) A user space program that interacts with HAL and sends NML
+    commands, it is intended to work as a full User Interface using
+    external knobs & switches 
 
-=== Componentes internos
+=== Internal Components
 
 stepgen::
-     Generador software de impulsos de pasos, con lazo de posición. Ver la sección <<sec:stepgen,stepgen>>
+     Software step pulse generator with position loop. See section <<sec:stepgen>>(((stepgen)))
 
 encoder::
-     Contador codificador basado en software. Ver la sección  <<sec:encoder,encoder>>
+     Software based encoder counter. See section <<sec:encoder>>(((encoder)))
 
 pid::
-     Bucle de control Proporcional/Integral/Derivativo. Ver la sección <<sec:pid,pid>>
+     Proportional/Integral/Derivative control loops. See section <<sec:pid>>
 
 siggen::
-     Un generador de ondas seno/coseno/triángular/cuadrada para pruebas.
-     Ver la sección <<sec:siggen,siggen>>
+     A sine/cosine/triangle/square wave generator for testing.
+    See section <<sec:siggen>>
 
 supply::
-     una fuente simple para pruebas(((supply)))
+     a simple source for testing(((supply)))
 
 
-=== Controladores de hardware
+=== Hardware Drivers
 
 hal_ax5214h::
-     (((hal-ax5214h))) Un controlador para la tarjeta de E/S digital Axiom Measurement & Control AX5241H
+     (((hal-ax5214h))) A driver for the Axiom Measurement & Control AX5241H
+    digital I/O board
 
 hal_gm::
-    (((hal-gm))) Placa General Mechatronics GM6-PCI
+    (((hal-gm))) General Mechatronics GM6-PCI board
 
 hal_m5i20::
-    (((hal-m5i20))) Placa Mesa Electronics 5i20
+    (((hal-m5i20))) Mesa Electronics 5i20 board
 
 hal_motenc::
-    (((hal-motenc))) Placa Vital Systems MOTENC-100
+    (((hal-motenc))) Vital Systems MOTENC-100 board
 
 hal_parport::
-    (((hal-parport))) Puerto paralelo de PC.
+    (((hal-parport))) PC parallel port.
 
 hal_ppmc::
-    (((hal-ppmc))) Familia de controladores de la familia Pico (PPMC, USC y UPC)
+    (((hal-ppmc))) Pico Systems family of controllers (PPMC, USC and UPC)
 
 hal_stg::
-    (((hal-stg))) Tarjeta Servo To Go (versión 1 y 2)
+    (((hal-stg))) Servo To Go card (version 1 & 2)
 
-hal_vti ::
-    (((hal-vti))) Controlador Vigilant Technologies PCI ENCDAC-4
+hal_vti::
+    (((hal-vti))) Vigilant Technologies PCI ENCDAC-4 controller
 
-=== Herramientas y utilidades
+=== Tools and Utilities
 
-Halcmd::
-    (((halcmd))) Herramienta de línea de comandos para configuración y ajuste. Ver
-    sección <<sec:halcmd,halcmd>>
-
-halgui::
-    Herramienta GUI para configuración y ajuste (aún no implementada).
+halcmd::
+     (((halcmd))) Command line tool for configuration and tuning. See
+    section <<sec:halcmd>> 
 
 halmeter::
-    (((halmeter))) Un práctico multímetro para señales HAL. Ver la sección <<sec:halmeter,halmeter>>.
+     (((halmeter))) A handy multimeter for HAL signals. See section <<sec:halmeter>>. 
 
 halscope::
-    (((halscope))) Un osciloscopio de almacenamiento digital completo para señales HAL.
-    Ver la sección <<sec:halscope,halscope>>.
+     (((halscope))) A full featured digital storage oscilloscope for HAL
+    signals. See the <<sec:halscope,Halscope>> section.
 
-Cada uno de estos bloques de construcción se describe en detalle en capítulos posteriores.
+Each of these building blocks is described in detail in later chapters.
 
-== Problemas de sincronización en HAL
+== Timing Issues In HAL
 
-A diferencia de los modelos de cableado físico entre cajas negras en el que se dijo
-que está basado HAL, la simple conexion de dos pines con una
-señal HAL queda aun lejos de la acción del caso físico.
+Unlike the physical wiring models between black boxes that we have
+said that HAL is based upon, simply connecting two pins with a
+hal-signal falls far short of the action of the physical case.
 
-La lógica de relés consiste en relés conectados entre sí, y cuando
-el contacto se abre o se cierra, la corriente fluye (o se detiene) inmediatamente. Otras
-bobinas pueden cambiar de estado, etc., y todo simplemente 'ocurre'. Pero un PLC de
-lógica de escalera no funciona de esa manera. Usualmente, en un solo pase
-a través de la escalera, cada escalón se evalúa en el orden en que
-aparece, y solo una vez por pase. Un ejemplo perfecto es una escalera de un solo escalón,
-con un contacto NC en serie con una bobina. El contacto y la bobina
-pertenecen al mismo rele
+True relay logic consists of relays connected together, and when a
+contact opens or closes, current flows (or stops) immediately. Other
+coils may change state, etc, and it all just 'happens'. But in PLC
+style ladder logic, it doesn't work that way. Usually in a single pass
+through the ladder, each rung is evaluated in the order in which it
+appears, and only once per pass. A perfect example is a single rung
+ladder, with a NC contact in series with a coil. The contact and coil
+belong to the same relay.
 
-Si se tratara de un relé convencional, tan pronto como se active la bobina,
-los contactos comienzan a abrirse y a desenergizarlo. Eso significa que los contactos
-cerraran de nuevo, etc, etc. El rele se convierte en un zumbador.
+If this were a conventional relay, as soon as the coil is energized,
+the contacts begin to open and de-energize it. That means the contacts
+close again, etc, etc. The relay becomes a buzzer.
 
-Con un PLC, si la bobina está DESACTIVADA y el contacto está cerrado cuando el PLC
-comienza a evaluar el peldaño, cuando termina ese pase, la bobina
-estára encendida. El hecho de que al encender la bobina se abre el contacto alimentado
-es ignorado hasta el próximo pase. En la siguiente pasada, el PLC ve que el
-el contacto está abierto y desenergiza la bobina. Entonces el rele sigue cambiando
-rápidamente entre encendido y apagado, pero a un ritmo determinado por la frecuencia con que
-el PLC evalúa el escalon.
+With a PLC, if the coil is OFF and the contact is closed when the PLC
+begins to evaluate the rung, then when it finishes that pass, the coil
+is ON. The fact that turning on the coil opens the contact feeding it
+is ignored until the next pass. On the next pass, the PLC sees that the
+contact is open, and de-energizes the coil. So the relay still switches
+rapidly between on and off, but at a rate determined by how often the
+PLC evaluates the rung.
 
-En HAL, la función es el código que evalúa el(los) escalón(es). De hecho,
-la versión en tiempo real HAL de ClassicLadder exporta una función que
-hace exactamente eso. Por otra parte, un hilo es lo que permite la ejecución de la
-función en intervalos de tiempo específicos. Al igual que puede elegir tener un
-PLC evalúando todos sus escalones cada 10 ms, o cada segundo, puede definir
-hilos HAL con diferentes períodos.
+In HAL, the function is the code that evaluates the rung(s). In fact,
+the HAL-aware realtime version of ClassicLadder exports a function to
+do exactly that. Meanwhile, a thread is the thing that runs the
+function at specific time intervals. Just like you can choose to have a
+PLC evaluate all its rungs every 10 ms, or every second, you can define
+HAL threads with different periods.
 
-Lo que distingue a un hilo de otro 'no' es lo que el hilo
-hace - eso está determinado por las funciones que son
-conectadas a el. La distinción real es simplemente la frecuencia con la que un hilo
-corre.
+What distinguishes one thread from another is 'not' what the thread
+does - that is determined by which functions are
+connected to it. The real distinction is simply how often a thread
+runs.
 
-En LinuxCNC, puede tener un hilo de 50 us y un hilo de 1 ms.
-Estos se crearían en base a BASE_PERIOD y SERVO_PERIOD; los 
-tiempos exactos dependeran de los valores en su archivo ini.
+In LinuxCNC you might have a 50 us thread and a 1 ms thread. 
+These would be created based on BASE_PERIOD and SERVO_PERIOD, the
+actual times depend on the values in your ini file. 
 
-El siguiente paso es decidir qué debe hacer cada hilo. Algunas de estas
-decisiones son las mismas en (casi) cualquier sistema LinuxCNC - Por ejemplo,
-la funcion motion-command-handler siempre se agrega al hilo servo.
+The next step is to decide what each thread needs to do. Some of those
+decisions are the same in (nearly) any LinuxCNC system--For instance,
+motion-command-handler is always added to servo-thread.
 
-Otras conexiones seran hechas por el integrador. Estas pueden incluir
-conectar las funciones de lectura de codificador de un controlador STG y las de
-escritura de un DAC al hilo servo, o enganchar la función stepgen al hilo base, junto con
-con la(s) función(es) parport para escribir pasos en el puerto paralelo.
+Other connections would be made by the integrator. These might include
+hooking the STG driver's encoder read and DAC write functions to the
+servo thread, or hooking stepgen's function to the base-thread, along
+with the parport function(s) to write the steps to the port.
+
+
