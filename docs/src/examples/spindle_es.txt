@@ -1,47 +1,45 @@
-:lang: es
-
 [[cha:spindle-control]]
 
-LinuxCNC puede controlar hasta 8 husillos. El número se establece en el archivo INI.
-Todos los ejemplos a continuación se refieren a una configuración de husillo único con
-pines de control del husillo con nombres como spindle.0...
-En el caso de una máquina de husillos múltiples, todo lo que cambia es que
-existen pines adicionales con nombres como spindle.6...
+LinuxCNC can control up to 8 spindles. The number is set in the INI file. 
+The examples below all refer to a single-spindle config with spindle
+control pins with names like spindle.0...
+In the case of a multiple spindle machine all that changes is that
+additional pins exist with names such as spindle.6...
 
-= Control de husillo
+= Spindle Control
 
 (((0-10v Spindle Speed Example)))
 
-== Velocidad del husillo 0-10v
+== 0-10v Spindle Speed
 
-Si la velocidad de su husillo está controlada por una señal analógica,
-(por ejemplo, por un VFD con una señal de 0 a 10 voltios) y
-estás usando una tarjeta DAC como la m5i20 para emitir la señal de control:
+If your spindle speed is controlled by an analog signal, 
+(for example, by a VFD with a 0 to 10 volt signal) and
+you're using a DAC card like the m5i20 to output the control signal: 
 
-Primero debe calcular la escala de la velocidad del husillo para controlar la señal.
-Para este ejemplo, la velocidad máxima del eje de 5000 RPM es igual a 10
-voltios
+First you need to figure the scale of spindle speed to control signal.
+For this example the spindle top speed of 5000 RPM is equal to 10
+volts. 
 
 image::images/spindle-math.png[align="center"]
 
-Tenemos que agregar un componente de escala al archivo HAL para escalar
-spindle.N.speed-out de 0 a 10 que necesita el VFD si su DAC de la
-la tarjeta no hace escalado.
+We have to add a scale component to the HAL file to scale the
+spindle.N.speed-out to the 0 to 10 needed by the VFD if your DAC
+card does not do scaling.
 
 ----
 loadrt scale count=1
 addf scale.0 servo-thread
 setp scale.0.gain 0.002    
 net spindle-speed-scale spindle.0.speed-out => scale.0.in
-net spindle-speed-DAC scale.0.out => <su nombre pin DAC>    
+net spindle-speed-DAC scale.0.out => <your DAC pin name>    
 ----
 
 (((PWM Spindle Speed Example)))
 
-== Velocidad del husillo PWM
+== PWM Spindle Speed
 
-Si su husillo puede ser controlado por una señal PWM,
-use el componente pwmgen para crear la señal:
+If your spindle can be controlled by a PWM signal, 
+use the pwmgen component to create the signal:
 
 ----
 loadrt pwmgen output_type=0 
@@ -50,24 +48,24 @@ addf pwmgen.make-pulses base-thread
 net spindle-speed-cmd spindle.0.speed-out => pwmgen.0.value
 net spindle-on spindle.0.on => pwmgen.0.enable
 net spindle-pwm pwmgen.0.pwm => parport.0.pin-09-out
-# Establecer la velocidad máxima del husillo en RPM
+# Set the spindle's top speed in RPM
 setp pwmgen.0.scale 1800
 ----
 
-Esto supone que la respuesta del controlador de husillo a PWM es simple:
-0% PWM da 0 RPM, 10% PWM da 180 RPM, etc. Si hay un PWM mínimo
-requerido para hacer girar el husillo, siga el ejemplo en la
-configuración de muestra de torno nist para usar un componente de escala.
+This assumes that the spindle controller's response to PWM is simple:
+0% PWM gives 0 RPM, 10% PWM gives 180 RPM, etc. If there is a minimum
+PWM required to get the spindle to turn, follow the example in the
+nist-lathe sample configuration to use a scale component.
 
 (((Spindle Enable Example)))
 
-== Habilitación del husillo
+== Spindle Enable
 
-Si necesita una señal de habilitación de husillo,
-enlace su pin de salida a spindle.0.on.
-Para vincular estos pines a un pin de puerto paralelo, coloque algo como
-lo siguiente en su archivo .hal, asegurándose de elegir el
-pin que está conectado a su dispositivo de control.
+If you need a spindle enable signal, 
+link your output pin to spindle.0.on. 
+To link these pins to a parallel port pin put something like 
+the following in your .hal file, making sure you pick the
+pin that is connected to your control device.
 
 ----
 net spindle-enable spindle.N.on => parport.0.pin-14-out
@@ -75,16 +73,16 @@ net spindle-enable spindle.N.on => parport.0.pin-14-out
 
 (((Spindle Direction Example)))
 
-== Dirección del husillo
+== Spindle Direction
 
-Si tiene control de dirección de su husillo, los pines HAL
-spindle.N.forward y spindle.N.reverse están controlados por M3
-y M4. La velocidad del husillo 'Sn' debe establecerse en un valor positivo distinto de cero para
-que M3/M4 activen el movimiento del husillo.
+If you have direction control of your spindle the HAL pins
+spindle.N.forward and spindle.N.reverse are controlled by M3
+and M4. Spindle speed 'Sn' must be set to a positive non-zero value for
+M3/M4 to turn on spindle motion.
 
-Para vincular estos pines a un pin de puerto paralelo, coloque algo como lo
-siguiendo en su archivo .hal asegurándose de elegir el pin que está
-conectado a su dispositivo de control.
+To link these pins to a parallel port pin, put something like the
+following in your .hal file making sure you pick the pin that is
+connected to your control device.
 
 ----
 net spindle-fwd spindle.0.forward => parport.0.pin-16-out
@@ -93,73 +91,73 @@ net spindle-rev spindle.0.reverse => parport.0.pin-17-out
 
 (((Spindle Soft Start Example)))
 
-== Arranque suave del husillo
+== Spindle Soft Start
 
-Si necesita rampa en el comando de velocidad del eje y su control
-no tiene esa característica, se puede hacer en HAL. Básicamente necesita
-secuestrar la salida de spindle.N.speed-out y llevarla a través de un
-componente limit2 con la escala establecida, por lo que las rpm subiran en rampa desde
-spindle.N.speed-out al dispositivo que recibe las rpm.
-La segunda parte es informar a LinuxCNC cuando el husillo está a velocidad para que el movimiento
-pueda empezar.
+If you need to ramp your spindle speed command and your control does
+not have that feature it can be done in HAL. Basically you need to
+hijack the output of spindle.N.speed-out and run it through a
+limit2 component with the scale set so it will ramp the rpm from
+spindle.N.speed-out to your device that receives the rpm. The
+second part is to let LinuxCNC know when the spindle is at speed so motion
+can begin.
 
-En el ejemplo de 0-10 voltios, la línea
+In the 0-10 volt example the line
     'net spindle-speed-scale spindle.0.speed-out => scale.0.in'
-se cambia como se muestra en el siguiente ejemplo:
+is changed as shown in the following example:
 
-.Introducción a los componentes HAL2 limit2 y near:
+.Intro to HAL components limit2 and near:
 *********************************************************************
-En caso de que no los haya visto antes, aquí damos una introducción rápida
-a los dos componentes HAL utilizados en el siguiente ejemplo. 
+In case you have not run across them before, here's a quick introduction 
+to the two HAL components used in the following example. 
 
-* "limit2" es un componente HAL (coma flotante) que acepta un
-   valor de entrada y proporciona una salida que se ha limitado a un
-   rango máximo/mínimo, y también limitado a no exceder una
-   tasa de cambio especificada. 
+* A "limit2" is a HAL component (floating point) that accepts an 
+   input value and provides an output that has been limited to a 
+   max/min range, and also limited to not exceed a specified 
+   rate of change. 
 
-* "near" es un componente HAL (coma flotante) con una salida binaria
-   que dice si dos entradas son aproximadamente iguales.
+* A "near" is a HAL component (floating point) with a binary output 
+   that says whether two inputs are approximately equal. 
 
-Más información está disponible en la documentación de los componentes HAL,
-o desde las páginas del manual, simplemente escriba 'man limit2' o 'man near' en una terminal.
+More info is available in the documentation for HAL components, 
+or from the man pages, just say 'man limit2' or 'man near' in a terminal. 
 *********************************************************************
 
 ----
-# carga en tiempo real un limit2 y un near con nombres para que sean más fáciles de seguir
+# load real time a limit2 and a near with names so it is easier to follow
 loadrt limit2 names=spindle-ramp
 loadrt near names=spindle-at-speed
 
-# agregar las funciones a un hilo
+# add the functions to a thread
 addf spindle-ramp servo-thread
 addf spindle-at-speed servo-thread
 
-# establece el parámetro para la tasa máxima de cambio
-# (aceleración / desaceleración máxima del husillo en unidades por segundo)
+# set the parameter for max rate-of-change
+# (max spindle accel/decel in units per second)
 setp spindle-ramp.maxv 60
 
-# secuestrar la velocidad del husillo y enviarla a spindle-ramp
+# hijack the spindle speed out and send it to spindle ramp in
 net spindle-cmd <= spindle.0.speed-out => spindle-ramp.in
 
-# la salida de spindle-ramp se envía a la escala
+# the output of spindle ramp is sent to the scale in
 net spindle-ramped <= spindle-ramp.out => scale.0.in
 
-# para saber cuándo comenzar el movimiento enviamos al componente near
-# (denominado spindle-at-speed) la velocidad ordenada del husillo desde
-# la señal spindle-cmd y la velocidad real del mismo
-# siempre que su husillo pueda acelerar a la configuración maxv.
+# to know when to start the motion we send the near component 
+# (named spindle-at-speed) to the spindle commanded speed from
+# the signal spindle-cmd and the actual spindle speed
+# provided your spindle can accelerate at the maxv setting.
 net spindle-cmd => spindle-at-speed.in1
 net spindle-ramped => spindle-at-speed.in2
 
-# la salida de spindle-at-speed se envía a spindle.0.at-speed
-# y cuando esto sea cierto, comenzará el movimiento
+# the output from spindle-at-speed is sent to spindle.0.at-speed
+# and when this is true motion will start
 net spindle-ready <= spindle-at-speed.out => spindle.0.at-speed
 ----
 
-== Feedback del husillo
+== Spindle Feedback
 
 (((Spindle Synchronized Motion Example)))
 
-=== Movimiento sincronizado del husillo
+=== Spindle Synchronized Motion
 
 Spindle feedback is needed by LinuxCNC to perform any spindle coordinated
 motions like threading and constant surface speed. 
@@ -170,51 +168,43 @@ possible with several spindles simultaneously.
 The StepConf Wizard can perform the connections for a single-spindle
 configuration for you if you select Encoder Phase A and Encoder Index as
 inputs.
-LinuxCNC necesita retroalimentación del husillo para realizar cualquier
-movimiento coordinado con el husillo como roscado o velocidad de superficie constante (CSS).
-LinuxCNC puede realizar movimientos sincronizados y CSS con cualquiera de hasta 8
-husillos. Los husillos que se utilizan se controlan desde el código G. CSS es
-posible con varios husillos simultáneamente.
 
-El asistente StepConf puede realizar las conexiones para configurar un solo husillo
-si selecciona Encoder Fase A e Encoder Indice como entradas.
+Hardware assumptions:
 
-Suposiciones de hardware:
+* An encoder is connected to the spindle and puts out 100 pulses per
+   revolution on phase A
+* The encoder A phase is connected to the parallel port pin 10
+* The encoder index pulse is connected to the parallel port pin 11
 
-* Un codificador está conectado al husillo y emite 100 pulsos por
-   revolución en la fase A
-* La fase A del codificador está conectada al pin 10 del puerto paralelo
-* El pulso de índice del codificador está conectado al pin 11 del puerto paralelo
-
-Pasos básicos para agregar los componentes y configurarlos:
-footnote:[En este ejemplo, asumiremos que algunos codificadores ya tienen
-asignaciones a ejes/articulaciones 0, 1 y 2. Por tanto, el próximo codificador disponible para nosotros
-sería el número 3. Su situación puede ser diferente.]
-footnote:[La habilitación del índice del codificador HAL es una excepción a la regla ya que
-se comporta como una entrada y una salida, vea la
-<<sec:encoder, sección del codificador>> para más detalles]
-footnote:[Ya que seleccionamos 'conteo simple no en cuadratura ...',
-podemos salir con el conteo de 'cuadratura' sin tener ninguna
-entrada B de cuadratura.]
+Basic Steps to add the components and configure them:
+footnote:[In this example, we will assume that some encoders have already
+been issued to axes/joints 0, 1, and 2. So the next encoder available for us
+to attach to the spindle would be number 3. Your situation may differ.]
+footnote:[The HAL encoder index-enable is an exception to the rule in that
+it behaves as both an input and an output, see the 
+<<sec:encoder,Encoder Section>> for details]
+footnote:[It is because we selected 'non-quadrature simple counting...' above
+that we can get away with 'quadrature' counting without having any 
+B quadrature input.] 
 
 ----
-# agregar el codificador a HAL y conéctarlo a los hilos.
+# add the encoder to HAL and attach it to threads.
 loadrt encoder num_chan=1
 addf encoder.update-counters base-thread
 addf encoder.capture-position servo-thread
 
-# establecer el codificador HAL en 100 pulsos por revolución.
+# set the HAL encoder to 100 pulses per revolution.
 setp encoder.3.position-scale 100
 
-# establecer el codificador HAL en un recuento simple no en cuadratura usando solo A.
+# set the HAL encoder to non-quadrature simple counting using A only.
 setp encoder.3.counter-mode true
 
-# conectar las salidas del codificador HAL a LinuxCNC.
+# connect the HAL encoder outputs to LinuxCNC.
 net spindle-position encoder.3.position => spindle.0.revs
 net spindle-velocity encoder.3.velocity => spindle.0.speed-in
 net spindle-index-enable encoder.3.index-enable <=> spindle.N.index-enable
 
-# conectar las entradas del codificador HAL al codificador real.
+# connect the HAL encoder inputs to the real encoder.
 net spindle-phase-a encoder.3.phase-A <= parport.0.pin-10-in
 net spindle-phase-b encoder.3.phase-B 
 net spindle-index encoder.3.phase-Z <= parport.0.pin-11-in
@@ -222,43 +212,43 @@ net spindle-index encoder.3.phase-Z <= parport.0.pin-11-in
 
 (((Spindle At Speed Example)))
 
-=== Husillo a velocidad
+=== Spindle At Speed
 
-Para permitir que LinuxCNC espere a que el eje esté a velocidad antes de ejecutar
-una serie de movimientos, debe establecer spindle.N.at-speed en true cuando
-el husillo está a la velocidad ordenada. Para hacer esto necesita
-retroalimentación de un codificador en el husillo. Puesto que la retroalimentación y la velocidad ordenada
-por lo general, no son "exactamente" iguales, debería usar un componente "near"
-para determinar que los dos números están lo suficientemente proximos.
+To enable LinuxCNC to wait for the spindle to be at speed before executing
+a series of moves. You need to set spindle.N.at-speed to true when
+the spindle is at the commanded speed. To do this you need spindle
+feedback from an encoder. Since the feedback and the commanded speed
+are not usually 'exactly' the same you should to use the 'near'
+component to determine that the two numbers are close enough. 
 
-Las conexiones necesarias son desde la
-señal de comando de velocidad del husillo a near.n.in1 y
-desde el codificador hasta near.n.in2. near.n.out está conectado a
-spindle.N.at-speed. near.n.scale debe establecerse para decir cuanto de
-cerca deben estar los dos números antes de activar la salida. Dependiendo
-de su configuración, es posible que deba ajustar la escala para que funcione con su
-hardware.
+The connections needed are from the spindle
+velocity command signal to near.n.in1 and from the spindle velocity
+from the encoder to near.n.in2. Then the near.n.out is connected to
+spindle.N.at-speed. The near.n.scale needs to be set to say how
+close the two numbers must be before turning on the output. Depending
+on your setup you may need to adjust the scale to work with your
+hardware. 
 
-Lo siguiente son las adiciones típicas necesarias para su
-archivo HAL para habilitar Spindle At Speed. Si ya tiene near en su HAL,
-aumente count y ajuste el código para adaptarlo.
-Asegúrese de que los nombres de las señales sean los mismos en su archivo HAL.
+The following is typical of the additions needed to your HAL
+file to enable Spindle At Speed. If you already have near in your HAL
+file then increase the count and adjust code to suit. Check to make
+sure the signal names are the same in your HAL file.
 
 ----
-# cargar un componente near y adjuntarlo a un hilo
+# load a near component and attach it to a thread
 loadrt near
 addf near.0 servo-thread
 
-# conectar una entrada a la velocidad de husillo ordenada
+# connect one input to the commanded spindle speed
 net spindle-cmd => near.0.in1
 
-# conectar una entrada a la velocidad del husillo medida por el codificador
+# connect one input to the encoder-measured spindle speed
 net spindle-velocity => near.0.in2
 
-# conectar la salida a la entrada de spindle-at-speed
+# connect the output to the spindle-at-speed input
 net spindle-at-speed spindle.0.at-speed <= near.0.out
 
-# configurar las entradas de velocidad del husillo para que estén de acuerdo si están dentro del 1%
+# set the spindle speed inputs to agree if within 1%
 setp near.0.scale 1.01
 ----
 
