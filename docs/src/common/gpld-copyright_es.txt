@@ -1,8 +1,6 @@
-= Seccion Legal
+= Legal Section
 
-N.T. Estos textos legales solo se muestra en Inglés ya que las traducciones no se reconocen oficialmente. 
-
-== Terminos de Copyright
+== Copyright Terms
 
 Copyright (c) 2000-2020 LinuxCNC.org
 
@@ -14,7 +12,7 @@ A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
 
-== Licencia GNU de Documentation Libre
+== GNU Free Documentation License
 
 GNU Free Documentation License Version 1.1, March 2000
 
