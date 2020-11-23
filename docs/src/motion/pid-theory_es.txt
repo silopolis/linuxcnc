@@ -1,186 +1,190 @@
-:lang: es
+= PID Tuning
 
-= Ajuste PID
+== PID Controller
 
-== Controlador PID
+A proportional-integral-derivative controller (PID controller) is a
+common feedback loop component in industrial control
+systems.footnote:[This Subsection is taken from an much more extensive
+article found at http://en.wikipedia.org/wiki/PID_controller]
 
-Un controlador PID (Controlador Proporcional-Integral-Derivativo) es un mecanismo de control por realimentación
-ampliamente usado en sistemas de control industrial.
-footnote:[Esta subsección está tomada de un articulo mucho más extenso
-encontrado en http://en.wikipedia.org/wiki/PID_controller]
+The Controller compares a measured value from a process (typically an
+industrial process) with a reference set point value. The difference
+(or 'error' signal) is then used to calculate a new value for a
+manipulable input to the process that brings the process measured value
+back to its desired set point.
 
-Este controlador calcula la desviación o error entre un valor medido de un proceso (típicamente un
-proceso industrial) y un valor deseado. La diferencia
-(o señal de 'error') se usa para calcular un nuevo valor de la
-entrada al proceso que lleva al valor medido del proceso
-a su punto de ajuste deseado.
+Unlike simpler control algorithms, the PID controller can adjust
+process outputs based on the history and rate of change of the error
+signal, which gives more accurate and stable control. (It can be shown
+mathematically that a PID loop will produce accurate, stable control in
+cases where a simple proportional control would either have a
+steady-state error or would cause the process to oscillate).
 
-A diferencia de algoritmos de control más simples, el controlador PID puede ajustar
-las salidas basandose en el historial y tasa de cambio de la señal de error, 
-lo que proporciona un control más preciso y estable. (Se puede demostrar
-matemáticamente que un bucle PID producirá un control preciso y estable en
-casos donde un control proporcional simple tendría un
-error de estado estable o haría que el proceso oscilara).
+=== Control loop basics
 
-=== Conceptos básicos de lazo de control
+Intuitively, the PID loop tries to automate what an intelligent
+operator with a gauge and a control knob would do. The operator would
+read a gauge showing the output measurement of a process, and use the
+knob to adjust the input of the process (the 'action') until the
+process's output measurement stabilizes at the desired value on the
+gauge.
 
-Intuitivamente, el bucle PID intenta automatizar lo que haria un operario inteligente
-con un dial medidor y un boton de control. El operador
-lee el medidor que muestra la medición de la salida de un proceso, y usa el
-mando para ajustar la entrada del proceso (la 'acción') hasta que
-la medición de salida del proceso se estabiliza al valor deseado.
+In older control literature this adjustment process is called a
+'reset' action. The position of the needle on the gauge is a
+'measurement', 'process value' or 'process variable'. The desired value
+on the gauge is called a 'set point' (also called 'set value'). The
+difference between the gauge's needle and the set point is the 'error'.
 
-En la literatura de control más antigua, este proceso de ajuste se denomina
-acción 'reset'. La posición de la aguja en el medidor es una
-'medida', 'valor de proceso' o 'variable de proceso'. El valor deseado
-en el medidor se llama 'punto de ajuste' (también llamado 'valor de ajuste').
-La diferencia entre la aguja del indicador y el punto de ajuste es el "error".
+A control loop consists of three parts:
 
-Un lazo de control consta de tres partes:
+1. Measurement by a sensor connected to the process (e.g. encoder),
 
-1. Medición por un sensor conectado al proceso (por ejemplo, un codificador),
+2. Decision in a controller element,
 
-2. Decisión en un elemento controlador,
+3. Action through an output device such as an motor.
 
-3. Acción a través de un dispositivo de salida, como un motor.
+As the controller reads a sensor, it subtracts this measurement from
+the 'set point' to determine the 'error'. It then uses the error to
+calculate a correction to the process's input variable (the 'action')
+so that this correction will remove the error from the process's output
+measurement.
 
-A medida que el controlador lee el sensor, resta esta medida
-del 'punto de ajuste' para determinar el 'error'. Luego usa el error para
-calcular una corrección de la variable de entrada del proceso (la 'acción')
-para que esta corrección elimine el error de la salida del proceso.
+In a PID loop, correction is calculated from the error in three ways:
+cancel out the current error directly (Proportional), the amount of
+time the error has continued uncorrected (Integral), and anticipate the
+future error from the rate of change of the error over time
+(Derivative).
 
-En un bucle PID, la corrección se calcula a partir del error de tres maneras:
-cancelar el error actual directamente (Proporcional), cantidad de
-tiempo que el error ha persistido sin corregir (Integral), y anticipar el
-error futuro a partir de la tasa de cambio del error en el tiempo (Derivado).
+A PID controller can be used to control any measurable variable which
+can be affected by manipulating some other process variable. For
+example, it can be used to control temperature, pressure, flow rate,
+chemical composition, speed, or other variables. Automobile cruise
+control is an example of a process outside of industry which utilizes
+crude PID control.
 
-Un controlador PID se puede usar para controlar cualquier variable medible que
-pueda verse afectada por la manipulación de alguna otra variable de proceso. Por
-ejemplo, se puede usar para controlar la temperatura, la presión, la velocidad de flujo,
-composición química, velocidad u otras variables. El control de la velocidad
-de crucero de un automóvil es un ejemplo de un proceso fuera de la industria que utiliza
-control PID.
+Some control systems arrange PID controllers in cascades or networks.
+That is, a 'master' control produces signals used by 'slave'
+controllers. One common situation is motor controls: one often wants
+the motor to have a controlled speed, with the 'slave' controller
+(often built into a variable frequency drive) directly managing the
+speed based on a proportional input. This 'slave' input is fed by the
+'master' controller's output, which is controlling based upon a related
+variable.
 
-Algunos sistemas de control organizan los controladores PID en cascadas o redes.
-Es decir, un control 'maestro' produce señales utilizadas por controladores 'esclavos'.
-Una situación común es el control del motor; a menudo se quiere que el
-motor tenga una velocidad controlada, con el controlador 'esclavo'
-(a menudo integrado en un driver de frecuencia variable) que gestiona directamente la
-velocidad basada en una entrada proporcional.Esta entrada 'esclava' es alimentada por 
-la salida del controlador 'maestro', que está controlando basándose en una variable relacionada.
+=== Theory
 
-=== Teoría
+'PID' is named after its three correcting calculations, which all add
+to and adjust the controlled quantity. These additions are actually
+'subtractions' of error, because the proportions are usually negative:
 
-'PID' lleva el nombre de sus tres cálculos de corrección; todos añaden
-o ajustan la cantidad controlada. Estas adiciones son en realidad
-'restas' de error, porque las proporciones son generalmente negativas:
+.Proportional
 
-.Proporcional
-
-Para manejar el estado presente, el error se multiplica por una
-P constante (de 'proporcional', negativa) y se añade (restando el error)
-a la cantidad controlada. P solo es válido en la banda sobre la que
-la salida del controlador es proporcional al error del sistema. Note
-que cuando el error es cero, la salida de un controlador proporcional es
-cero.
+To handle the present, the error is multiplied by a (negative)
+constant P (for 'proportional'), and added to (subtracting error from)
+the controlled quantity. P is only valid in the band over which a
+controller's output is proportional to the error of the system. Note
+that when the error is zero, a proportional controller's output is
+zero.
 
 .Integral
 
-Para aprender del pasado, el error está integrado (acumulado) sobre un
-período de tiempo, y luego multiplicado por una constante I (negativa, haciendo
-un promedio), y añadido a (restando el error de) la cantidad controlada. 
-Se promedia el error medido para encontrar el error promedio del proceso
-desde el punto de ajuste. Un sistema proporcional simple oscila, avanzando y 
-retrocediendo alrededor del punto establecido porque no hay
-nada para eliminar el error cuando se sobrepasa, u oscila y/o
-se estabiliza a un valor demasiado bajo o demasiado alto. Al agregar una 
-proporción negativa (es decir, restar parte de) del error promedio de la
-entrada de proceso, la diferencia promedio entre la salida del proceso y
-el punto de ajuste siempre se está reduciendo. Por lo tanto, eventualmente, una
-salida del proceso del bucle PID bien ajustado se establecerá en el punto de ajuste.
+To learn from the past, the error is integrated (added up) over a
+period of time, and then multiplied by a (negative) constant I (making
+an average), and added to (subtracting error from) the controlled
+quantity. I averages the measured error to find the process output's
+average error from the set point. A simple proportional system either
+oscillates, moving back and forth around the set point because there's
+nothing to remove the error when it overshoots, or oscillates and/or
+stabilizes at a too low or too high value. By adding a negative
+proportion of (i.e. subtracting part of) the average error from the
+process input, the average difference between the process output and
+the set point is always being reduced. Therefore, eventually, a
+well-tuned PID loop's process output will settle down at the set point.
 
-.Derivativo
+.Derivative
 
-Para manejar el futuro, se calcula la primera derivada (la pendiente del error)
-con el tiempo y se multiplica por otra constante (negativa)
-D, y también se añade a (restando el error de) la cantidad controlada.
-El término derivativo controla la respuesta a un cambio en el sistema.
-Cuanto mayor es el término derivado, más rápidamente responde el controlador
-a los cambios en el resultado del proceso.
+To handle the future, the first derivative (the slope of the error)
+over time is calculated, and multiplied by another (negative) constant
+D, and also added to (subtracting error from) the controlled quantity.
+The derivative term controls the response to a change in the system.
+The larger the derivative term, the more rapidly the controller
+responds to changes in the process's output.
 
-Más técnicamente, un bucle PID se puede caracterizar como un filtro aplicado
-a un complejo sistema de dominio de frecuencia. Esto es útil para
-calcular si realmente alcanzará un valor estable. Si los valores
-se eligen incorrectamente, la entrada del proceso controlado puede oscilar, y
-la salida del proceso nunca permanecerá en el punto de ajuste.
+More technically, a PID loop can be characterized as a filter applied
+to a complex frequency-domain system. This is useful in order to
+calculate whether it will actually reach a stable value. If the values
+are chosen incorrectly, the controlled process input can oscillate, and
+the process output may never stay at the set point.
 
-=== Afinacion del lazo
+=== Loop Tuning
 
-'Afinar' un lazo de control es ajustar sus parámetros de control
-(ganancia/banda proporcional, ganancia integral/reset , ganancia derivativa/tasa) a
-los valores óptimos para la respuesta deseada de control. El comportamiento óptimo
-en un cambio de proceso o cambio de punto de ajuste varía según
-la aplicación. Algunos procesos no deben permitir un sobre-exceso de la
-variable de proceso sobre el punto de ajuste. Otros procesos deben minimizar la
-energía gastada para alcanzar un nuevo punto de referencia. Generalmente se requiere estabilidad de
-respuesta y el proceso no debe oscilar para ninguna combinación de condiciones de proceso y puntos de ajuste.
+'Tuning' a control loop is the adjustment of its control parameters
+(gain/proportional band, integral gain/reset, derivative gain/rate) to
+the optimum values for the desired control response. The optimum
+behavior on a process change or set point change varies depending on
+the application. Some processes must not allow an overshoot of the
+process variable from the set point. Other processes must minimize the
+energy expended in reaching a new set point. Generally stability of
+response is required and the process must not oscillate for any
+combination of process conditions and set points.
 
-El ajuste de los bucles se hace más complicado por el tiempo de respuesta del
-proceso; puede tomar minutos u horas que un cambio de punto de ajuste produzca
-un efecto estable. Algunos procesos tienen un grado de no linealidad y, por lo tanto,
-parámetros que funcionan bien en condiciones de carga completa no funcionan cuando el
-el proceso se inicia sin carga. Esta sección describe algunos
-métodos manuales tradicionales para sintonización de bucle.
+Tuning of loops is made more complicated by the response time of the
+process; it may take minutes or hours for a set point change to produce
+a stable effect. Some processes have a degree of non-linearity and so
+parameters that work well at full-load conditions don't work when the
+process is starting up from no-load. This section describes some
+traditional manual methods for loop tuning.
 
-Hay varios métodos para ajustar un ciclo PID. La elección del método
-dependerá en gran medida de si el ciclo se puede sintonizar 'fuera de línea'
-y de la velocidad de respuesta del sistema. Si el sistema puede ser
-puesto fuera de línea, el mejor método de ajuste a menudo implica someter al
-sistema a un cambio de un paso la entrada, midiendo la salida en función del
-tiempo y usando esta respuesta para determinar los parámetros de control.
+There are several methods for tuning a PID loop. The choice of method
+will depend largely on whether or not the loop can be taken 'offline'
+for tuning, and the response speed of the system. If the system can be
+taken offline, the best tuning method often involves subjecting the
+system to a step change in input, measuring the output as a function of
+time, and using this response to determine the control parameters.
 
-.Método simple
+.Simple method
 
-Si el sistema debe permanecer en línea, se debe configurar primero un ajuste a cero
-de los valores I y D. Aumentar P hasta que la salida del lazo
-oscile. Luego aumentar I hasta que la oscilación se detenga. Por último, aumentar
-D hasta que el ciclo sea aceptablemente rápido en alcanzar su referencia. Un PID rápido
-generalmente sobrepasa ligeramente el punto de ajuste establecido para alcanzarlo con más
-rapidez. Sin embargo, algunos sistemas no pueden aceptar estos rebasamientos.
+If the system must remain on line, one tuning method is to first set
+the I and D values to zero. Increase the P until the output of the loop
+oscillates. Then increase I until oscillation stops. Finally, increase
+D until the loop is acceptably quick to reach its reference. A fast PID
+loop tuning usually overshoots slightly to reach the set point more
+quickly; however, some systems cannot accept overshoot.
 
 [width="90%", options="header", cols="^,4*<"]
-| =====================================
-| Parámetro | Tiempo de subida | Sobredisparo | Tiempo de estabilizacion | Error de estado estable
-| P | Disminuir | Aumentar | Pequeño cambio | Disminuir
-| I | Disminuir | Aumentar | Aumentar | Eliminar
-| D | Pequeño cambio | Disminuir | Disminuir | Pequeño cambio
-| =====================================
+|========================================
+|Parameter | Rise Time | Overshoot | Settling Time | Steady State Error
+|P | Decrease | Increase | Small Change | Decrease
+|I | Decrease | Increase | Increase | Eliminate
+|D | Small Change | Decrease | Decrease | Small Change
+|========================================
 
-Efectos del aumento de parámetros
+Effects of increasing parameters
 
-.Método Ziegler-Nichols
+.Ziegler-Nichols method
 
-Otro método de ajuste se conoce formalmente como el 'método Ziegler-Nichols', presentado 
-por John G. Ziegler y Nathaniel B. Nichols. Comienza de la misma manera que el método 
-descrito anteriormente: primero, se configura I y D a cero y luego se aumenta la ganancia P y 
-se expone el ciclo a una interferencia externa, por ejemplo golpeando el eje del motor para
-sacarlo del equilibrio, con el fin de determinar la ganancia crítica y el
-período de oscilación hasta que la salida del bucle comience a oscilar.
-Anote la ganancia crítica (K~c~) y el periodo de la oscilación
-de la salida (P~c~). Luego ajuste los controles P, I y D como muestra la tabla:
+Another tuning method is formally known as the 'Ziegler-Nichols
+method', introduced by John G. Ziegler and Nathaniel B. Nichols. It
+starts in the same way as the method described before: first set the I
+and D gains to zero and then increase the P gain and expose the loop to
+external interference for example knocking the motor axis to cause it
+to move out of equilibrium in order to determine critical gain and
+period of oscillation until the output of the loop starts to oscillate.
+Write down the critical gain (K~c~) and the oscillation
+period of the output (P~c~). Then adjust the P, I and D
+controls as the table shows:
 
 [width="90%", options="header", cols="4*^"]
-| =======================================
-| Tipo de control | P       | I        | D
-| P               | .5K~c~  |          |
-| PI              | .45K~c~ | P~c~/1.2 |
-| PID             | .6K~c~  | P~c~/2   | P~c~/8
-| =======================================
+|==========================================
+|Control type | P       | I        | D
+|P            | .5K~c~  |          | 
+|PI           | .45K~c~ | P~c~/1.2 | 
+|PID          | .6K~c~  | P~c~/2   | P~c~/8
+|==========================================
 
-.Pasos Finales
+.Final Steps
 
-Después de ajustar el eje, verifique el error de seguimiento con Halscope para 
-asegurarse de que está dentro de los requisitos de su máquina. Hay más información sobre
-Halscope en el manual de usuario de HAL.
-
+After tuning the axis check the following error with Halscope to make
+sure it is within your machine requirements. More information on 
+Halscope is in the HAL User manual. 
 
