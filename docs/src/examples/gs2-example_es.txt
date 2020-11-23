@@ -1,59 +1,59 @@
 [[cha:gs2-spindle]]
 
-= Husillo con GS2
+= GS2 Spindle
 
-Este ejemplo muestra las conexiones necesarias para usar un VFD GS2
-de Automation Direct para manejar un husillo. La velocidad y dirección del husillo son
-controladas por LinuxCNC.
+This example shows the connections needed to use an Automation Direct
+GS2 VFD to drive a spindle. The spindle speed and direction is
+controlled by LinuxCNC.
 
-El uso del componente GS2 tiene muy poco que configurar. Empezamos con una configuración
-generada por el asistente Stepconf. Asegúrese de que los pines con "Husillo
-CW" y "Husillo PWM" están configurados como no utilizados en la configuración del puerto paralelo.
+Using the GS2 component involves very little to set up. We start with
+a Stepconf Wizard generated config. Make sure the pins with "Spindle
+CW" and "Spindle PWM" are set to unused in the parallel port setup
+screen.
 
-En el archivo custom.hal colocamos lo siguiente para conectar LinuxCNC al
-GS2 y que controle la unidad.
+In the custom.hal file we place the following to connect LinuxCNC to the
+GS2 and have LinuxCNC control the drive.
 
-.GS2 Ejemplo
+.GS2 Example
 ----
-# cargar el componente de espacio de usuario para VFD Automation Direct GS2
+# load the user space component for the Automation Direct GS2 VFD's 
 loadusr -Wn spindle-vfd gs2_vfd -r 9600 -p none -s 2 -n spindle-vfd
 
-# conecte el pin de dirección del husillo al GS2
+# connect the spindle direction pin to the GS2 
 net gs2-fwd spindle-vfd.spindle-fwd <= spindle.N.forward
 
-# conecte el pin de arranque del husillo al GS2
+# connect the spindle on pin to the GS2 
 net gs2-run spindle-vfd.spindle-on <= spindle.N.on
 
-# conecte el GS2 a velocidad al movimiento a velocidad
+# connect the GS2 at speed to the motion at speed 
 net gs2-at-speed spindle.N.at-speed <= spindle-vfd.at-speed
 
-# conecte RPM de husillo al GS2
+# connect the spindle RPM to the GS2 
 net gs2-RPM spindle-vfd.speed-command <= spindle.N.speed-out
 ----
 
 [NOTE]
-La velocidad de transmisión puede ser más rápida dependiendo del entorno exacto.
-Tanto la unidad como las opciones de línea de comando deben coincidir. Para verificar
-errores de transmisión, agregue la opción '-v' a la línea de comando y ejecute desde un
+The transmission speed might be able to be faster depending on the exact
+envirnment. Both the drive and the command line options must match. To check
+for transmission errors add the '-v' command line option and run from a
 terminal.
 
-Necesita configurar un par de cosas en el propio driver GS2 antes de que 
-las comunicaciones modbus funcionen. Puede que sea necesario configurar otros parámetros
-basado en sus requisitos físicos, pero estos están más allá del alcance de este
-manual. Consulte el manual de GS2 que vino con la unidad para obtener más información
-sobre los parámetros del variador.
+On the GS2 drive itself you need to set a couple of things before the
+modbus communications will work. Other parameters might need to be set
+based on your physical requirements but these are beyond the scope of this
+manual. Refer to the GS2 manual that came with the drive for more
+information on the drive parameters.
 
-* Los interruptores de comunicación deben configurarse en RS-232C
-* Los parámetros del motor deben configurarse para que coincidan con el motor
-* P3.00 (Fuente del comando de operación) debe establecerse en Operación
-   determinada por la interfaz RS-485, 03 o 04
-* P4.00 (Fuente del comando de frecuencia) debe establecerse en Frecuencia
-   determinada por la interfaz de comunicación RS232C/RS485, 05
-* P9.01 (Velocidad de transmisión) debe establecerse en 9600 baudios, 01
-* P9.02 (Protocolo de comunicación) debe establecerse en "Modo Modbus RTU,
-   8 bits de datos, sin paridad, 2 bits de parada ", 03
+* The communications switches must be set to RS-232C
+* The motor parameters must be set to match the motor
+* P3.00 (Source of Operation Command) must be set to Operation
+   determined by RS-485 interface, 03 or 04
+* P4.00 (Source of Frequency Command) must be set to Frequency
+   determined by RS232C/RS485 communication interface, 05
+* P9.01 (Transmission Speed) must be set to 9600 baud, 01
+* P9.02 (Communication Protocol) must be set to "Modbus RTU mode,
+   8 data bits, no parity, 2 stop bits", 03
 
-Un panel PyVCP basado en este ejemplo está <<gs2-rpm-meter,aqui>>.
-
+A PyVCP panel based on this example is <<gs2-rpm-meter,here>>.
 
 
