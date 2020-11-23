@@ -1,8 +1,5 @@
-:lang: es
-
-= Mensajes NML
-Lista de mensajes NML 
-Para mas detalles, vea src/emc/nml_intf/emc.hh
+= NML Messages
+for details see src/emc/nml_intf/emc.hh
 
     OPERATOR
 ----
@@ -191,7 +188,7 @@ Para mas detalles, vea src/emc/nml_intf/emc.hh
     EMC_IO_PLUGIN_CALL_TYPE
 ----
 
-    OTROS
+    OTHER
 ----
     EMC_NULL_TYPE
     EMC_SET_DEBUG_TYPE
