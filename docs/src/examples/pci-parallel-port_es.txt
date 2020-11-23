@@ -1,21 +1,19 @@
-:lang: es
-
 [[cha:pci-parallel-port]]
 
-= Puerto paralelo PCI
+= PCI Parallel Port
 
-Cuando agrega un segundo puerto paralelo a su bus PCI, debe encontrar
-la dirección antes de poder usarlo con LinuxCNC.
+When you add a second parallel port to your PCI bus you have to find
+out the address before you can use it with LinuxCNC.
 
-Para encontrar la dirección de su tarjeta de puerto paralelo, abra una ventana de terminal
-y escriba
+To find the address of your parallel port card open a terminal window
+and type
 
 ----
 lspci -v
 ----
 
-Verá algo similar a esto, así como información sobre todo lo
-demás en el bus PCI:
+You will see something similar to this as well as info on everything
+else on the PCI bus:
 
 ----
 0000:00:10.0 Communication controller: \
@@ -30,28 +28,28 @@ demás en el bus PCI:
         I/O ports at bc00 [size=16]
 ----
 
-En mi caso, la dirección fue la primera, así que cambié mi archivo .hal de
+In my case the address was the first one so I changed my .hal file from
 
 ----
 loadrt hal_parport cfg=0x378
 ----
 
-a
+to
 
 ----
 loadrt hal_parport cfg="0x378 0xa800 in"
 ----
 
-(Tenga en cuenta las comillas dobles que rodean las direcciones).
+(Note the double quotes surrounding the addresses.)
 
-y luego agregó las siguientes líneas para que el parport se lea y se escriba: 
+and then added the following lines so the parport will be read and written: 
 
 ----
 addf parport.1.read base-thread  
 addf parport.1.write base-thread
 ----
 
-Después de hacer lo anterior, ejecute su configuración y verifique que
-el puerto paralelo se cargó en la ventana Máquina/Mostrar Configuración HAL.
+After doing the above then run your config and verify that the
+parallel port got loaded in Machine/Show HAL Configuration window.
 
 
