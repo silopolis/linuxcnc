@@ -1,353 +1,357 @@
-:lang: es
-:toc:
-
 [[cha:cnc-machine-overview]]
 
-= Descripcion general de una máquina CNC
+= CNC Machine Overview
 
-Esta sección proporciona una breve descripción de una máquina CNC
-desde los puntos de vista de entrada y salida del intérprete.
+This section gives a brief description of how a CNC machine is viewed
+from the input and output ends of the Interpreter.
 
-== Componentes mecanicos
+== Mechanical Components
 
-Una máquina CNC tiene muchos componentes mecánicos que pueden ser controlados o
-que pueden afectar a la forma en que se ejerce el control. Esta sección
-describe el subconjunto de aquellos componentes que interactúan con el
-interprete. Los componentes mecánicos que no interactúan directamente con
-el intérprete, como los botones de jog, no se describen aquí, incluso
-si afectan al control.
+A CNC machine has many mechanical components that may be controlled or
+may affect the way in which control is exercised. This section
+describes the subset of those components that interact with the
+Interpreter. Mechanical components that do not interact directly with
+the Interpreter, such as the jog buttons, are not described here, even
+if they affect control.
 
-=== Ejes
+=== Axes
 
-Cualquier máquina CNC tiene uno o más ejes. Diferentes tipos de máquinas CNC
-pueden tener diferentes combinaciones. Por ejemplo, una 'fresadora de 4 ejes'
-puede tener ejes XYZA o XYZB. Un torno normalmente tiene los ejes XZ. Una
-máquina de corte de espuma puede tener ejes XYUV. En LinuxCNC, el caso de una 
-máquina 'pórtico' XYYZ, con dos motores para un eje, se maneja mejor
-con la cinemática en lugar de con un segundo eje lineal. footnote:[si el
-el movimiento de los componentes mecánicos no es independiente, como en
-máquinas hexapod, el lenguaje RS274/NGC y las funciones de mecanizado canónicas
-seguirán siendo utilizables, siempre que los niveles inferiores de control
-sepan cómo controlar los mecanismos reales para producir el mismo
-movimiento relativo de herramienta y pieza de trabajo como el que se produciría por ejes independientes.
-Esto se llama 'cinemática'.]
+Any CNC machine has one or more Axes. Different types of CNC machines
+have different combinations. For instance, a '4-axis milling machine'
+may have XYZA or XYZB axes. A lathe typically has XZ axes. A
+foam-cutting machine may have XYUV axes. In LinuxCNC, the case of a XYYZ
+'gantry' machine with two motors for one axis is better handled by
+kinematics rather than by a second linear axis. footnote:[If the 
+motion of mechanical components is not independent, as with 
+hexapod machines, the RS274/NGC language and the canonical machining
+functions will still be usable, as long as the lower levels of control
+know how to control the actual mechanisms to produce the same relative
+motion of tool and workpiece as would be produced by independent axes.
+This is called 'kinematics'.]
 
-.Ejes lineales primarios (((ejes, primarios lineales)))
+.Primary Linear Axes (((axes, primary linear)))
 
-Los ejes X, Y y Z producen movimiento lineal en tres
-direcciones mutuamente ortogonales.
+The X, Y, and Z axes produce linear motion in three mutually
+orthogonal directions.
 
-.Ejes lineales secundarios (((ejes, secundarios lineales)))
+.Secondary Linear Axes (((axes, secondary linear)))
 
-Los ejes U, V y W producen movimiento lineal en tres
-direcciones ortogonales. Típicamente, X y U son paralelos, Y y V son
-paralelo, y Z y W son paralelos.
+The U, V, and W axes produce linear motion in three mutually
+orthogonal directions. Typically, X and U are parallel, Y and V are
+parallel, and Z and W are parallel.
 
-.Ejes Rotacionales (((ejes, rotacionales)))
+.Rotational Axes (((axes, rotational)))
 
-Los ejes A, B y C producen movimiento angular (rotación). Normalmente, A
-gira alrededor de una línea paralela a X, B gira alrededor de una línea paralela
-a Y, y C gira alrededor de una línea paralela a Z.
+The A, B and C axes produce angular motion (rotation). Typically, A
+rotates around a line parallel to X, B rotates around a line parallel
+to Y, and C rotates around a line parallel to Z.
 
-=== Husillo (((husillo)))
+=== Spindle (((spindle)))
 
-Una máquina CNC tiene generalmente un husillo que contiene una herramienta de corte,
-una sonda, o el material en el caso de un torno. El husillo puede 
-ser controlado por el software CNC.
+A CNC machine typically has a spindle which holds one cutting tool,
+probe, or the material in the case of a lathe. The spindle may or may
+not be controlled by the CNC software.
+LinuxCNC offers suport for up to 8 spindles, which can be individually
+controlled and can run simultaneously at different speeds and in different
+directions. 
 
-=== Refrigerante (((refrigerante)))
+=== Coolant (((coolant)))
 
-Una máquina CNC puede tener componentes para proporcionar refrigerante por niebla  y/o inundación.
-El refrigerante puede ser controlado por códigos G.
+If a CNC machine has components to provide mist coolant and/or flood
+coolant they can be controlled by G codes.
 
-=== Controles de velocidad y alimentacion
+=== Feed and Speed Override
 
-Una máquina CNC puede tener controles separados de velocidades rapida y de avance,
-que permite al operador especificar la velocidad de avance real, o la 
-velocidad utilizada en el husillo, en porcentaje de la velocidad programada.
+A CNC machine can have separate feed and speed override controls,
+which let the operator specify that the actual feed rate or spindle
+speed used in machining at some percentage of the programmed rate.
 
-=== Interruptor de borrado de bloque
+=== Block Delete Switch
 
-Una máquina CNC puede tener un interruptor de eliminación de bloques de codigo G marcados para ello. Vea la
-seccion <<sub:block-delete-switch,Eliminar Bloques>>.
+A CNC machine can have a block delete switch. See the
+<<sub:block-delete-switch,Block Delete>> Section.
 
-=== Interruptor de parada de programa opcional
+=== Optional Program Stop Switch
 
-Una máquina CNC puede tener un interruptor de parada opcional de programa. Ver la
-seccion <<sub:optional-program-stop, parada opcional de programa>>.
+A CNC machine can have an optional program stop switch. See the 
+<<sub:optional-program-stop,Optional Program Stop>> Section.
 
-== Componentes de control y datos
+== Control and Data Components
 
-=== Ejes lineales
+=== Linear Axes
 
-Los ejes X, Y y Z forman un sistema de coordenadas estándar de mano derecha de
-ejes lineales ortogonales. Las posiciones de los tres mecanismos de movimiento lineal
-se expresan usando coordenadas en estos ejes.
+The X, Y, and Z axes form a standard right-handed coordinate system of
+orthogonal linear axes. Positions of the three linear motion mechanisms
+are expressed using coordinates on these axes.
 
-Los ejes U, V y W también forman un sistema de coordenada a derechas estándar. 
-X y U son paralelos, Y y V son paralelos, y Z y W son
-paralelo (cuando el giro en A, B y C es cero).
+The U, V and W axes also form a standard right-handed coordinate
+system. X and U are parallel, Y and V are parallel, and Z and W are
+parallel (when A, B, and C are rotated to zero).
 
-=== Ejes de rotacion
+=== Rotational Axes
 
-Los ejes de rotación se miden en grados como ejes lineales de revolucion en
-los que la dirección de la rotación positiva es en sentido antihorario cuando
-se ven desde el extremo positivo del eje X, Y o Z correspondiente. Por
-"eje lineal de revolucion", nos referimos a uno en el que la posición angular puede
-aumentar sin límite (va hacia más-infinito) a medida que el eje gira
-en sentido antihorario y decrece sin límite (va hacia menos-infinito) 
-a medida que el eje gira en el sentido de las agujas del reloj. Se utilizan ejes lineales de revolucion
-independientemente de si hay o no un límite mecánico en la rotación.
+The rotational axes are measured in degrees as wrapped linear axes in
+which the direction of positive rotation is counterclockwise when
+viewed from the positive end of the corresponding X, Y, or Z-axis. By
+'wrapped linear axis', we mean one on which the angular position
+increases without limit (goes towards plus infinity) as the axis turns
+counterclockwise and deceases without limit (goes towards minus
+infinity) as the axis turns clockwise. Wrapped linear axes are used
+regardless of whether or not there is a mechanical limit on rotation.
 
-El sentido horario o antihorario se toma desde el punto de vista de la
-pieza de trabajo. Si la pieza de trabajo está sujeta a un plato giratorio que gira en un
-eje de rotación, un giro en sentido antihorario desde el punto de vista de
-la pieza de trabajo se logra girando el plato giratorio en una dirección que
-(para la mayoría de las configuraciones de máquina comunes) se ve en el sentido de las agujas del reloj desde el punto
-de vista de alguien parado al lado de la máquina. footnote:[si
-se viola el requisito de paralelismo, el creador del sistema
-tiene que decir cómo distinguir entre sentido horario y antihorario.]
+Clockwise or counterclockwise is from the point of view of the
+workpiece. If the workpiece is fastened to a turntable which turns on a
+rotational axis, a counterclockwise turn from the point of view of the
+workpiece is accomplished by turning the turntable in a direction that
+(for most common machine configurations) looks clockwise from the point
+of view of someone standing next to the machine. footnote:[If the
+parallelism requirement is violated, the system builder will
+have to say how to distinguish clockwise from counterclockwise.]
 
-=== Punto controlado
+=== Controlled Point
 
-El punto controlado es el punto cuya posición y velocidad de movimiento
-están controlados. Cuando el offset de la longitud de la herramienta es cero (el valor predeterminado), este
-es un punto en el eje del husillo (a menudo llamado punto calibrado) que es una distancia fija más allá del final del husillo,
-generalmente cerca del extremo del portaherramientas que encaja en el husillo.
-La ubicación del punto controlado se puede mover a lo largo del eje del husillo
-especificando una cantidad positiva para el offset de la longitud de la herramienta.
-Esta cantidad es normalmente la longitud de la herramienta de corte en uso, por lo que
-el punto controlado está al final de la herramienta de corte. En un torno,
-los offsets de longitud de herramienta se pueden especificar para los ejes X y Z, y el
-punto controlado esta en la punta de la herramienta o ligeramente fuera de ella
-(donde las líneas perpendiculares, alineadas a los ejes, tocadas por el 'frente' y
-'flanco' de la herramienta se cruzan).
+The controlled point is the point whose position and rate of motion
+are controlled. When the tool length offset is zero (the default
+value), this is a point on the spindle axis (often called the gauge
+point) that is some fixed distance beyond the end of the spindle,
+usually near the end of a tool holder that fits into the spindle. The
+location of the controlled point can be moved out along the spindle
+axis by specifying some positive amount for the tool length offset.
+This amount is normally the length of the cutting tool in use, so that
+the controlled point is at the end of the cutting tool. On a lathe,
+tool length offsets can be specified for X and Z axes, and the
+controlled point is either at the tool tip or slightly outside it
+(where the perpendicular, axis-aligned lines touched by the 'front' and
+'side' of the tool intersect).
 
-=== Movimiento lineal coordinado
+=== Coordinated Linear Motion
 
-Para manejar una herramienta a lo largo de una ruta especifica, un centro de mecanizado debe
-coordinar el movimiento de varios ejes. Usamos el término 
-'movimiento lineal coordinado' para describir la situación en la que, nominalmente, cada eje
-se mueve a velocidad constante y todos los ejes se mueven desde sus posiciones iniciales
-a sus posiciones finales al mismo tiempo. Si solo los ejes X, Y y Z
-(o uno o dos de ellos) se mueven, se produce movimiento en una línea recta,
-de ahí la palabra 'lineal' en el término. En movimientos reales,
-a menudo no es posible mantener la velocidad constante por la aceleración o
-desaceleración al comienzo y/o al final del movimiento.
-Sin embargo, es factible controlar los ejes para que, en todo momento, cada
-eje haya completado la misma fracción del movimiento requerido que los
-otros ejes. Esto mueve la herramienta a lo largo de la misma ruta, y también llamamos a este
-tipo de movimiento 'movimiento lineal coordinado'.
+To drive a tool along a specified path, a machining center must often
+coordinate the motion of several axes. We use the term 'coordinated
+linear motion' to describe the situation in which, nominally, each axis
+moves at constant speed and all axes move from their starting positions
+to their end positions at the same time. If only the X, Y, and Z axes
+(or any one or two of them) move, this produces motion in a straight
+line, hence the word 'linear' in the term. In actual motions, it is
+often not possible to maintain constant speed because acceleration or
+deceleration is required at the beginning and/or end of the motion. It
+is feasible, however, to control the axes so that, at all times, each
+axis has completed the same fraction of its required motion as the
+other axes. This moves the tool along same path, and we also call this
+kind of motion coordinated linear motion.
 
-El movimiento lineal coordinado se puede realizar a la
-velocidad de avance, o a la velocidad rapida, o puede estar sincronizado con la
-rotación del husillo. Si los límites físicos en la velocidad del eje hacen que la tasa deseada
-sea inalcanzable, todos los ejes se ralentizan para mantener el camino deseado.
+Coordinated linear motion can be performed either at the prevailing
+feed rate, or at traverse rate, or it may be synchronized to the
+spindle rotation. If physical limits on axis speed make the desired
+rate unobtainable, all axes are slowed to maintain the desired path.
 
-[[sub:feed-rate]](((velocidad de avance)))
+[[sub:feed-rate]](((Feed Rate)))
 
-=== Velocidad de avance
+=== Feed Rate
 
-La velocidad a la que se mueve el punto controlado es, nominalmente, la
-velocidad estable que puede establecer el usuario. En el intérprete, la tasa de alimentación
-se interpreta de la siguiente manera (a menos que los modos 'alimentacion inversa al tiempo' o 'alimentacion
-por revolución' se esten utilizando, en cuyo caso, consulte la Sección
+The rate at which the controlled point moves is nominally a steady
+rate which may be set by the user. In the Interpreter, the feed
+rate is interpreted as follows (unless 'inverse time feed' or 'feed
+per revolution' modes are being used, in which case see Section
 <<gcode:g93-g94-g95,G93-G94-G95-Mode,G93 G94 G95>>).
 
- . Si X,Y o Z se mueven, F está en unidades por minuto en el
-   sistema cartesiano XYZ, y todos los demás ejes (ABCUVW) se mueven para arrancar y
-   parar de manera coordinada.
- . De lo contrario, si U,V o W se mueven, F está en unidades por minuto en el
-   sistema cartesiano UVW y todos los demás ejes (ABC) se mueven para arrancar y
-   parar de manera coordinada.
- . De lo contrario, el movimiento es puro movimiento giratorio y la palabra F está en
-   unidades de rotación en el sistema ABC 'pseudo-cartesiano'.
+ .  If any of XYZ are moving, F is in units per minute in the XYZ
+   cartesian system, and all other axes (ABCUVW) move so as to start and
+   stop in coordinated fashion. 
+ .  Otherwise, if any of UVW are moving, F is in units per minute in the
+   UVW cartesian system, and all other axes (ABC) move so as to start and
+   stop in coordinated fashion. 
+ .  Otherwise, the move is pure rotary motion and the F word is in rotary
+   units in the ABC 'pseudo-cartesian' system.
 
-=== Refrigerante (((refrigerante)))
+=== Coolant (((coolant)))
 
-El refrigerante de inundación y el refrigerante de niebla pueden encenderse independientemente.
-El lenguaje RS274/NGC los apaga juntos con un solo codigo M. Ver Sección <<mcode:m7-m8-m9,M7 M8 M9>>.
+Flood coolant and mist coolant may each be turned on independently.
+The RS274/NGC language turns them off together see Section 
+<<mcode:m7-m8-m9,M7 M8 M9>>.
 
 === Dwell (((dwell)))
 
-Se puede ordenar que un centro de mecanizado haga dwell (es decir, mantenga todos los ejes
-inmóviles) durante una cantidad específica de tiempo. El uso más común de dwell
-es romper y despejar las virutas, por lo que el husillo suele girar durante un
-dwell. Independientemente del modo de control de ruta (ver la sección 
-<<sec:path-control-mode,control de ruta>>) la máquina se detendrá exactamente al final del
-movimiento programado anterior, como si estuviera en modo de ruta exacta.
+A machining center may be commanded to dwell (i.e., keep all axes
+unmoving) for a specific amount of time. The most common use of dwell
+is to break and clear chips, so the spindle is usually turning during a
+dwell. Regardless of the Path Control Mode (see Section 
+<<sec:path-control-mode,Path Control>>) the machine will stop exactly at the end of
+the previous programmed move, as though it was in exact path mode.
 
-=== Unidades (((unidades)))
+=== Units (((units)))
 
-Las unidades utilizadas para distancias a lo largo de los ejes X, Y y Z pueden medirse en
-milímetros o pulgadas. Las unidades para todas las demás cantidades involucradas en
-el control de la máquina no puede ser cambiadas. Diferentes cantidades usan diferentes
-unidades específicas. La velocidad del husillo se mide en revoluciones por minuto.
-Las posiciones de los ejes de rotación se miden en grados. La velocidad de alimentación
-se expresan en unidades de longitud actual por minuto, o grados por
-minuto, o unidades de longitud por revolución del husillo, como se describe en la Sección
-<<gcode:g93-g94-g95, G93 G94 G95>>.
+Units used for distances along the X, Y, and Z axes may be measured in
+millimeters or inches. Units for all other quantities involved in
+machine control cannot be changed. Different quantities use different
+specific units. Spindle speed is measured in revolutions per minute.
+The positions of rotational axes are measured in degrees. Feed rates
+are expressed in current length units per minute, or degrees per
+minute, or length units per spindle revolution, as described in Section 
+<<gcode:g93-g94-g95,G93 G94 G95>>. 
 
-=== Posicion actual
+=== Current Position
 
-El lugar donde en cualquier momento se encuentra el punto controlado se llama 'posición actual', 
-y el controlador siempre conoce dónde está ese punto. Los números que
-representan la posición actual deben ajustarse si, en ausencia de
-cualquier movimiento del eje, ocurre alguno de estos eventos:
+The controlled point is always at some location called the 'current
+position', and the controller always knows where that is. The numbers
+representing the current position must be adjusted in the absence of
+any axis motion if any of several events take place:
 
- . Se cambian las unidades de longitud.
- . El offset de la longitud de la herramienta ha cambiado.
- . Se modifican los offsets del sistema de coordenadas.
+ . Length units are changed.
+ . Tool length offset is changed.
+ . Coordinate system offsets are changed. 
 
-=== Plano seleccionado
+=== Selected Plane
 
-Siempre hay un "plano seleccionado", que debe ser el plano XY, el
-YZ, o el XZ del centro de mecanizado. El eje Z es,
-por supuesto, perpendicular al plano XY, el eje X al plano YZ, y
-el eje Y al plano XZ.
+There is always a 'selected plane', which must be the XY-plane, the
+YZ-plane, or the XZ-plane of the machining center. The Z-axis is, of
+course, perpendicular to the XY-plane, the X-axis to the YZ-plane, and
+the Y-axis to the XZ-plane.
 
-=== Carrusel de herramientas
+=== Tool Carousel
 
-Se asigna cero o una herramienta a cada ranura en el carrusel de herramientas.
+Zero or one tool is assigned to each slot in the tool carousel.
 
-=== Cambio de herramienta
+=== Tool Change
 
-Se puede ordenar a un centro de mecanizado que cambie las herramientas.
+A machining center may be commanded to change tools.
 
 === Pallet Shuttle
 
-Hasta dos palets pueden intercambiarse por comando.
+The two pallets may be exchanged by command.
 
-[[sec:path-control-mode]](((modo de control de ruta)))
+[[sec:path-control-mode]](((Path Control Mode)))
 
-=== Modo de control de ruta
+=== Path Control Mode
 
-El centro de mecanizado puede colocarse en cualquier modo de control de ruta entre estos tres;
-(1) modo de parada exacta, (2) modo de ruta exacta, o (3) modo continuo
-con tolerancia opcional. En el modo de parada exacta, la máquina se detiene brevemente
-al final de cada movimiento programado. En modo de ruta exacta, la máquina
-sigue la ruta programada lo más exactamente posible, ralentizandose o deteniendose,
-si es necesario en las esquinas agudas del camino. En modo continuo,
-las esquinas de la ruta pueden ser redondeadas ligeramente para que la velocidad de alimentación pueda
-mantenerse actualizada (pero no más que la tolerancia, si se ha especificado). Ver las
-secciones <<gcode:g61>>,G61/G61.1>> y <<gcode:g64,G64>>.
+The machining center may be put into any one of three path control
+modes: (1) exact stop mode, (2) exact path mode, or (3) continuous mode
+with optional tolerance. In exact stop mode, the machine stops briefly
+at the end of each programmed move. In exact path mode, the machine
+follows the programmed path as exactly as possible, slowing or stopping
+if necessary at sharp corners of the path. In continuous mode, sharp
+corners of the path may be rounded slightly so that the feed rate may
+be kept up (but by no more than the tolerance, if specified). See
+Sections <<gcode:g61,G61>> and <<gcode:g64,G64>>.
 
-== Interaccion del interprete con los interruptores
+== Interpreter Interaction with Switches
 
-El intérprete interactúa con varios conmutadores. Esta sección
-describe las interacciones con más detalle. En ningún caso el
-intérprete sabe cuál es la configuración de cualquiera de estos interruptores.
+The Interpreter interacts with several switches. This section
+describes the interactions in more detail. In no case does the
+Interpreter know what the setting of any of these switches is.
 
-=== Interruptores de porcentaje de alimentacion y velocidad
+=== Feed and Speed Override Switches
 
-Los comandos RS274/NGC 'M48' y 'M49' del intérprete permiten o deshabilitan los
-controles de porcentaje de alimentación y velocidad. Para ciertos
-movimientos, como la salida al final de un hilo durante un ciclo de roscado,
-los interruptores se deshabilitan automáticamente.
+The Interpreter will interpret RS274/NGC commands which enable 'M48'
+or disable 'M49' the feed and speed override switches. For certain
+moves, such as the
+traverse out of the end of a thread during a threading cycle, the
+switches are disabled automatically.
 
-LinuxCNC reacciona a la configuración de porcentaje de alimentación y velocidad cuando estos
-interruptores están habilitados.
+LinuxCNC reacts to the speed and feed override settings when these
+switches are enabled.
 
-Consulte la sección <<mcode:m48-m49,Interruptores M48-M49>> para obtener más información.
+See the <<mcode:m48-m49,M48 M49 Override>> section for more
+information.
 
 [[sub:block-delete-switch]]
 
-=== Interruptor de borrado de bloque
+=== Block Delete Switch
 
-Si el interruptor de borrado de bloque está activado, las líneas de código G que comienzan
-con una barra inclinada (el carácter de 'borrar bloque') no se interpretan. Si el
-interruptor está apagado, tales líneas si son interpretadas. Normalmente, este
-interruptor debe activarse antes de iniciar el programa NGC.
+If the block delete switch is on, lines of G code which start
+with a slash (the block delete character) are not interpreted. If the
+switch is off, such lines are interpreted. Normally the block delete
+switch should be set before starting the NGC program.
 
 [[sub:optional-program-stop]]
 
-=== Interruptor de parada opcional de programa
+=== Optional Program Stop Switch
 
-Si este interruptor está activado y se encuentra un código M1, la ejecución del programa
-entra en pausa.
+If this switch is on and an M1 code is encountered, program execution
+is paused.
 
-== Tabla de herramientas
+== Tool Table
 
-Para usar el intérprete se requiere una tabla de herramientas. El archivo dice que
-herramientas están en qué ranuras de un cambiador de herramientas y cuál es el tamaño y tipo de
-cada herramienta. El nombre de la tabla de herramientas se define en el archivo ini:
+A tool table is required to use the Interpreter. The file tells which 
+tools are in which tool changer slots and what the size and type of 
+each tool is. The name of the tool table is defined in the ini file: 
 
 ----
 [EMCIO]
 
-# archivo de tabla de herramientas
+# tool table file
 TOOL_TABLE = tooltable.tbl
 ----
 
-El nombre de archivo predeterminado probablemente se parezca a lo anterior, pero
-es posible que prefiera darle a su máquina su propia tabla de herramientas, utilizando el
-mismo nombre en su archivo ini, pero siempre con extensión tbl. Por ejemplo:
+The default filename probably looks something like the above, but 
+you may prefer to give your machine its own tool table, using the 
+same name as your ini file, but with a tbl extension: 
 
 ----
 TOOL_TABLE = acme_300.tbl
 ----
 
-o
+or
 
 ----
 TOOL_TABLE = EMC-AXIS-SIM.tbl
 ----
 
-Para obtener más información sobre los detalles del formato de la tabla de herramientas,
-vea la sección <<sec:tool-table,Formato de la tabla de herramientas>>.
+For more information on the specifics of the tool table format, 
+see the <<sec:tool-table,Tool Table Format>> Section. 
 
-== Parametros
+== Parameters
 
-Bajo el punto de vista del lenguaje RS274/NGC, un centro de mecanizado mantiene una matriz
-de parámetros numéricos definida por el valor de sistema (RS274NGC_MAX_PARAMETERS). 
-Muchos de ellos tienen usos específicos, especialmente
-en la definición de sistemas de coordenadas. La cantidad de parámetros numéricos puede
-aumentar a medida que el desarrollo agrege soporte para nuevos parámetros. La
-matriz persiste con el tiempo, incluso si el centro de mecanizado está apagado.
-LinuxCNC usa un archivo de parámetros para asegurar la persistencia y le da
-al intérprete la responsabilidad de mantener el archivo.
-El intérprete lee el archivo cuando se inicia y lo escribe cuando se cierra.
+In the RS274/NGC language view, a machining center maintains an array
+of numerical parameters defined by a system definition
+(RS274NGC_MAX_PARAMETERS). Many of them have specific uses especially
+in defining coordinate systems. The number of numerical parameters can
+increase as development adds support for new parameters. The parameter
+array persists over time, even if the machining center is powered down.
+LinuxCNC uses a parameter file to ensure persistence and gives the
+Interpreter the responsibility for maintaining the file. The
+Interpreter reads the file when it starts up, and writes the file when
+it exits.
 
-Todos los parámetros están disponibles para su uso en programas de código G.
+All parameters are available for use in G code programs.
 
-El formato de un archivo de parámetros se muestra en la siguiente tabla.
-El archivo consiste en cualquier cantidad de
-líneas de encabezado, seguidas por una línea en blanco, seguidas por cualquier cantidad de
-líneas de datos. El intérprete omite las líneas de encabezado. Es
-importante que haya exactamente una línea en blanco (sin espacios ni tabuladores)
-antes de los datos. La línea de encabezado que se muestra en la siguiente tabla
-describe las columnas de datos, por lo que se
-sugiere (pero no es obligatorio) que esa línea siempre se incluya en el
-encabezamiento.
+The format of a parameter file is shown in the following table.
+The file consists of any number of
+header lines, followed by one blank line, followed by any number of
+lines of data. The Interpreter skips over the header lines. It is
+important that there be exactly one blank line (with no spaces or tabs,
+even) before the data. The header line shown in the following table 
+describes the data columns, so it is
+suggested (but not required) that that line always be included in the
+header.
 
-El intérprete solo lee las dos primeras columnas de la tabla.
-La tercera columna, "Comentario", no es leída por el intérprete.
+The Interpreter reads only the first two columns of the table. The
+third column, 'Comment', is not read by the Interpreter.
 
-Cada línea del archivo contiene el número de índice del parámetro en la
-primera columna y, en la segunda columna, el valor al que ese parámetro debe establecerse.
-El valor se representa como un numero flotante de doble precisión
-dentro del intérprete, pero el punto decimal no es
-obligatorio en el archivo. Todos los parámetros que se muestran en la siguiente tabla
-son parámetros requeridos y deben ser
-incluidos en cualquier archivo de parámetros, excepto cualquier parámetro que represente
-un valor de eje de rotación para un eje no utilizado, que puede omitirse. Se señalara un error
-si falta algún parámetro requerido.
-El archivo puede incluir cualquier otro parámetro, siempre que su número esté en el
-rango de 1 a 5400. Los números de los parámetros se deben organizar en orden ascendente; si no lo
-estan, se señalara un error. Cualquier parámetro incluido en 
-el archivo leído por el intérprete se incluirá en el archivo que se escriba cuando se cierre.
-El archivo original se guarda como un archivo de copia de seguridad cuando se escribe el nuevo archivo.
-Los comentarios no se conservan cuando se escribe el archivo.
+Each line of the file contains the index number of a parameter in the
+first column and the value to which that parameter should be set in the
+second column. The value is represented as a double-precision floating
+point number inside the Interpreter, but a decimal point is not
+required in the file. All of the parameters shown in the following table 
+are required parameters and must be
+included in any parameter file, except that any parameter representing
+a rotational axis value for an unused axis may be omitted. An error
+will be signaled if any required parameter is missing. A parameter
+file may include any other parameter, as long as its number is in the
+range 1 to 5400. The parameter numbers must be arranged in ascending
+order. An error will be signaled if not. Any parameter included in the
+file read by the Interpreter will be included in the file it writes as
+it exits. The original file is saved as a backup file when the new file
+is written. Comments are not preserved when the file is written.
 
-Formato de archivo de parámetros
+.Parameter File Format
 
 [width="75%", options="header", cols="^,^,<"]
-|=====================================
-|Número de parámetro|Valor Parámetro|Comentario
-| 5161 | 0.0 | G28 Home X
-| 5162 | 0.0 | G28 Home Y
-|=====================================
+|========================================
+|Parameter Number | Parameter Value | Comment
+|5161 | 0.0 | G28 Home X
+|5162 | 0.0 | G28 Home Y
+|========================================
 
-Vea la sección <<gcode:parameters,Parametros para más información.
-
+See the <<gcode:parameters,Parameters>> section for more information.
 
