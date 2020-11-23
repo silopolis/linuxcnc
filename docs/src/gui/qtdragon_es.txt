@@ -1,46 +1,45 @@
-:lang: es
 [[cha:qtdragon-gui]](((SilverDragon)))
 
 
 :ini: {basebackend@docbook:'':ini}
 :hal: {basebackend@docbook:'':hal}
 
-= GUI SilverDragon
+= SilverDragon GUI
 
-== Introducción
-SilverDragon está construido con el marco QTVCP.
-Gran parte se basa en el excelente trabajo de otros en la comunidad LinuxCNC.
+== Introduction
+SilverDragon is built with the QTVCP framework.
+Much of it is based on the excellent work of others in the LinuxCNC community.
 [NOTE]
-SilverDragon y QtVcp son nuevos programas agregados a linuxcnc.
-Errores y rarezas son posibles. Por favor pruebe cuidadosamente cuando use un
-máquina peligrosa Envíe informes al foro o a la lista de correo.
+SilverDragon and QtVcp are new programs added into linuxcnc.
+Bugs and oddities are possible. Please test carefully when using a 
+dangerous machine. Please forward reports to the forum or maillist.
 
-.qtdragon - Muestra de 3 o 4 ejes
+.qtdragon - 3 or 4 Axis Sample
 image::images/silverdragon.png["QTDragon Router",scale="25%"]
 
-== Comenzando
+== Getting Started
 
-Si su configuración no está configurada actualmente para usar SilverDragon,
-puede cambiarlo editando el archivo INI. +
-En la sección '[DISPLAY]' cambie la línea 'DISPLAY' para que lea: +
-<<sec:display-section,Sección de visualización >>
+If your configuration is not currently set up to use SilverDragon, 
+you can change it by editing the INI file. +
+In the section '[DISPLAY]' change the 'DISPLAY' line to read: +
+<<sec:display-section,Display Section>>
 [source,{ini}]
 ----
 [DISPLAY]
 DISPLAY = qtvcp qtdragon
 ----
 
-Para realizar un seguimiento de las preferencias, qtdragon busca un archivo de texto de preferencias. +
-agregue la siguiente entrada bajo el encabezado '[DISPLAY]'.
-(son posibles otras opciones, consulte los documentos del widget screenoption del qtvcp).
+To keep track of preferences, qtdragon looks for a preference text file. +
+add the following entry under the '[DISPLAY]' heading. 
+(other options are possible see the qtvcp's screenoption widget docs.) +
 
 [source,{ini}]
 ----
-PREFERENCE_FILE_PATH = WORKINGFOLDER / qtdragon.pref
+PREFERENCE_FILE_PATH = WORKINGFOLDER/qtdragon.pref
 ----
 
-Puede especificar dónde guardar el historial / registros. +
-En la sección '[DISPLAY]' agregue: +
+You can specify where to save history/logs. +
+In the section '[DISPLAY]' add: +
 
 [source,{ini}]
 ----
@@ -49,24 +48,24 @@ MACHINE_LOG_PATH = machine_log.dat
 LOG_FILE = qtdragon.log
 ----
 
-Para que las rutinas básicas de la sonda funcionen, SUBROUTINE_PATH debe establecerse correctamente. +
-(Su ruta puede ser diferente a esta muestra) +
-<<sec:rs274ngc-section, sección RS274ngc >>
+For the basicprobe routines to work the SUBROUTINE_PATH must be set properly. +
+(Your path may be different then this sample) +
+<<sec:rs274ngc-section,RS274ngc Section>>
 [source,{ini}]
 ----
 [RS274NGC]
 SUBROUTINE_PATH = ../../../../nc_files/probe/basic_probe/macros
 ----
 
-También requiere pines de E / S analógicas adicionales para el sondeo. +
-Asegúrese de que esta línea en el archivo HAL tenga la entrada 'num_aio = 13': +
-El resto de la línea depende de su configuración y puede ser diferente y no debe cambiarse. +
+It also requires extra analog I/O pins for probing. +
+Make sure this line in the HAL file has the 'num_aio=13' entry: +
+The rest of the line depends on your setup and could be different and should not be changed. +
 [source,{hal}]
 ----
 loadrt motmod servo_period_nsec = [EMCMOT] SERVO_PERIOD num_joints = 4 num_aio = 13
 ----
 
-SilverDragon tiene entradas INI personalizadas: +
+SilverDragon has custom INI entries: +
 [source,{ini}]
 ----
 [TOOLSENSOR]
@@ -80,75 +79,75 @@ X = 106.9
 Y = -16.85
 ----
 
-La configuración de muestra
-'sim / qtvcp_screens / qtdragon / qtdragon_xyza.ini' ya está configurado para usar SilverDragon como su front-end. +
-Hay varios otros, para demostrar diferentes configuraciones de máquina.
+The sample configuration
+'sim/qtvcp_screens/qtdragon/qtdragon_xyza.ini' is already configured to use SilverDragon as its front-end. +
+There are several others, to demonstrate different machine configurations.
 
-== Vinculaciones de teclas
-SilverDragon no está destinado a utilizar principalmente un teclado para el control de la máquina. +
-Hay varias pulsaciones de teclas que controlarán la máquina para mayor comodidad. +
+== Key Bindings
+SilverDragon is not intended to primarily use a keyboard for machine control. +
+There are several key presses that will control the machine for convenience. +
 ----
-F1 - Estop encendido / apagado
-F2 - Encendido / apagado de la máquina
-F12 - Editor de estilos
-Inicio - Inicio Todo conjunto de la máquina
-Escape - Abortar movimiento
-Pausa-Pausa Movimiento de la máquina
+F1 - Estop on/off
+F2 - Machine on/off
+F12 - Style Editor
+Home - Home All Joint of the Machine
+Escape - Abort Movement
+Pause -Pause Machine Movement
 ----
 
-== Botones
+== Buttons
 
-Los botones que son marcables cambiarán su color de texto cuando estén marcados.
+Buttons that are checkable will change their text colour when checked.
 
-== Teclado virtual
-QtDragon incluye un teclado virtual para usar con pantallas táctiles. +
-Para habilitar el teclado, marque la casilla de verificación Usar teclado virtual en la página Configuración. +
-Al hacer clic en cualquier campo de entrada, como parámetros de sonda o entradas de la tabla de herramientas, se mostrará el teclado. +
-También se puede mostrar haciendo clic en el botón KEYBD en la parte superior de la pantalla, +
-a menos que la máquina esté en modo AUTO. Para ocultar el teclado, realice una de las siguientes acciones: +
-  - haga clic en el botón de página PRINCIPAL +
-  - haga clic en el botón KEYBD
-  - ir al modo AUTO +
+== Virtual Keyboard
+QtDragon includes a virtual keyboard for use with touchscreens. +
+To enable the keyboard, check the Use Virtual Keyboard checkbox in the Settings page. +
+Clicking on any input field, such as probe parameters or tool table entries, will show the keyboard. +
+It can also be shown by clicking the KEYBD button on the top of the screen, +
+unless the machine is in AUTO mode. To hide the keyboard, do one of the following: +
+  -  click the MAIN page button +
+  - click the KEYBD button 
+  - go into AUTO mode +
 
-Cabe señalar que el desplazamiento del teclado está desactivado cuando se utiliza el teclado virtual. +
+It should be noted that keyboard jogging is disabled when using the virtual keyboard. +
 
-== Pines HAL
-Estos pines son específicos de la pantalla qtDragon. Por supuesto, hay muchos más pines HAL +
-que debe estar conectado para que linuxcnc funcione. +
+== HAL Pins
+These pins are specific to the qtDragon screen, There are of course are many more HAL pins +
+that must be connected for linuxcnc to function. +
 
-Si necesita un aviso de cambio de herramienta manual, agregue estas líneas en su archivo postgui.
+If you need a manual tool change prompt, add these lines in your postgui file.
 [source,{hal}]
 ----
-net tool-change hal_manualtoolchange.change <= iocontrol.0.tool-change
-net tool-changed hal_manualtoolchange.changed <= iocontrol.0.tool-changed
-net tool-prep-number hal_manualtoolchange.number <= iocontrol.0.tool-prep-number
+net tool-change      hal_manualtoolchange.change   <=  iocontrol.0.tool-change 
+net tool-changed     hal_manualtoolchange.changed  <=  iocontrol.0.tool-changed
+net tool-prep-number hal_manualtoolchange.number   <=  iocontrol.0.tool-prep-number
 ----
 
-Estos pines deben estar conectados en el archivo postgui para que el sondeo funcione:
+These pins must be connected in the postgui file for probing to work:
 [source,{hal}]
 ----
-net xwidth 		motion.analog-out-00 => qtdragon.x_width
-net ywidth 		motion.analog-out-01 => qtdragon.y_width
-net avg_dia 	motion.analog-out-02 => qtdragon.avg_diameter
-net edge_angle 	motion.analog-out-03 => qtdragon.edge_angle
-net edge_delta 	motion.analog-out-04 => qtdragon.edge_delta
-net xminus 		motion.analog-out-05 => qtdragon.x_minus
-net yminus 		motion.analog-out-06 => qtdragon.y_minus
-net zminus 		motion.analog-out-07 => qtdragon.z_minus
-net xplus 		motion.analog-out-08 => qtdragon.x_plus
-net yplus 		motion.analog-out-09 => qtdragon.y_plus
-net xcenter 	motion.analog-out-10 => qtdragon.x_center
-net ycenter 	motion.analog-out-11 => qtdragon.y_center
-net cal_offset 	motion.analog-out-12 => qtdragon.cal_offset
+net xwidth           motion.analog-out-00 => qtdragon.x_width
+net ywidth           motion.analog-out-01 => qtdragon.y_width
+net avg_dia          motion.analog-out-02 => qtdragon.avg_diameter
+net edge_angle       motion.analog-out-03 => qtdragon.edge_angle
+net edge_delta       motion.analog-out-04 => qtdragon.edge_delta
+net xminus           motion.analog-out-05 => qtdragon.x_minus
+net yminus           motion.analog-out-06 => qtdragon.y_minus
+net zminus           motion.analog-out-07 => qtdragon.z_minus
+net xplus            motion.analog-out-08 => qtdragon.x_plus
+net yplus            motion.analog-out-09 => qtdragon.y_plus
+net xcenter          motion.analog-out-10 => qtdragon.x_center
+net ycenter          motion.analog-out-11 => qtdragon.y_center
+net cal_offset       motion.analog-out-12 => qtdragon.cal_offset
 ----
 
-Este pin de entrada debe estar conectado para indicar el estado de la sonda:
+This input pin should be connected to indicate probe state: 
 [source,{hal}]
 ----
 qtdragon.hal_led_probe
 ----
 
-Estos pines se pueden conectar para indicar estados del interruptor de inicio:
+These pins can be connected to indicate home switch states:
 [source,{hal}]
 ----
 qtdragon.hal_led_home_x
@@ -156,7 +155,7 @@ qtdragon.hal_led_home_y
 qtdragon.hal_led_home_z
 ----
 
-Estos pines son entradas relacionadas con el VFD del husillo que indican:
+These pins are inputs related to spindle VFD indicating:
 [source,{hal}]
 ----
 qtdragon.modbus-errors
@@ -165,20 +164,20 @@ qtdragon.spindle_fault
 qtdragon.spindle_volts
 ----
 
-Este pin es una salida al control del husillo para pausarlo:
+This pin is an output to the spindle control to pause it:
 [source,{hal}]
 ----
 qtdragon.spindle_pause
 ----
 
-Estos pines de salida se pueden conectar para encender un láser:
+This output pins can be connected to turn on a laser:
 [source,{hal}]
 ----
 qtdragon.btn_laser_on
 ----
 
-Estos pines de salida indican botones que fueron presionados,
-son probablemente de uso limitado:
+These output pins indicate buttons that were pushed, 
+they are probably of limited use:
 [source,{hal}]
 ----
 qtdragon.btn_dimensions
@@ -196,7 +195,7 @@ qtdragon.btn_tool_add
 qtdragon.btn_tool_delete
 ----
 
-Estos pines están relacionados con compensaciones externas si se usan:
+These pins are related to external offsets if they are used:
 [source,{hal}]
 ----
 qtdragon.eoffset_clear
@@ -206,88 +205,87 @@ qtdragon.eoffset_value
 qtdragon.led_eoffset_limit
 ----
 
-== archivos HAL
+== HAL files
 
-Los archivos HAL suministrados son solo para simulación. Una máquina real necesita sus propios archivos HAL personalizados. La pantalla qtdragon
-funciona con 3 o 4 ejes con una junta por eje o 3 o 4 ejes en una configuración de pórtico. (2 articulaciones en 1 eje)
+The HAL files supplied are for simulation only. A real machine needs its own custom HAL files. The qtdragon screen
+works with 3 or 4 axes with one joint per axis or 3 or 4 axes in a gantry configuration. (2 joints on 1 axis)
 
-== Cambios manuales de herramientas
-Si su máquina requiere cambios manuales de herramientas, SilverDragon puede abrir un cuadro de mensaje para dirigirlo. +
-Debe conectar el pin HAL adecuado en el archivo post_gui.
-Por ejemplo:
+== Manual Tool Changes
+If your machine requires manual tool changes, SilverDragon can pop a message box to direct you. +
+You must connect the proper HAL pin in the post_gui file.
+For example:
 [source,{hal}]
 ----
-net tool-change hal_manualtoolchange.change <= iocontrol.0.tool-change
-net tool-changed hal_manualtoolchange.changed <= iocontrol.0.tool-changed
-net tool-prep-number hal_manualtoolchange.number <= iocontrol.0.tool-prep-number
+net tool-change      hal_manualtoolchange.change   <=  iocontrol.0.tool-change 
+net tool-changed     hal_manualtoolchange.changed  <=  iocontrol.0.tool-changed
+net tool-prep-number hal_manualtoolchange.number   <=  iocontrol.0.tool-prep-number
 ----
 
-== Husillo
+== Spindle
 
-La pantalla está diseñada para interactuar con un VFD, pero seguirá funcionando sin ella. Hay una serie de controladores VFD incluidos
-en la distribución linuxcnc. Depende del usuario final proporcionar el controlador apropiado y las conexiones de archivos HAL de acuerdo con
-a su propia configuración de máquina.
+The screen is intended to interface to a VFD, but will still work without it. There are a number of VFD drivers included 
+in the linuxcnc distribution. It is up to the end user to supply the appropriate driver and HAL file connections according
+to his own machine setup.
 
-== Sondeo
+== Probing
 
-La pantalla de la sonda ha pasado por pruebas básicas, pero aún podría haber algunos errores menores.
-Al ejecutar rutinas de sondeo, tenga mucho cuidado hasta que esté familiarizado
-con cómo funciona todo. Las rutinas de la sonda se ejecutan sin bloquear la GUI principal. Esto le da al operador la oportunidad
-para ver los DRO y detener la rutina en cualquier momento.
+The probe screen has been through basic testing but there could still be some minor bugs.
+When running probing routines, use extreme caution until you are familiar
+with how everything works. Probe routines run without blocking the main GUI. This gives the operator the opportunity 
+to watch the DROs and stop the routine at any time.
 
 [NOTE]
-El sondeo es muy implacable con los errores; asegúrese de verificar la configuración antes de usar.
+Probing is very unforgiving to mistakes; be sure to check settings before using.
 
-.qtdragon - Muestra de sonda
+.qtdragon - Probe Sample
 image::images/silverdragon_probe.png["QTDragon Probe",scale="25%"]
 
-== Ejecutar desde línea
+== Run from Line
 
-Se puede iniciar un programa gcode en cualquier línea haciendo clic en la línea deseada en la pantalla de gcode mientras está en modo AUTO. +
-Es responsabilidad del operador asegurarse de que la máquina esté en el modo operativo deseado. +
-Se mostrará un cuadro de diálogo que permite preestablecer la dirección y la velocidad del husillo. +
-La línea de inicio se indica en el cuadro LÍNEA, junto al botón INICIO DE CICLO. +
-La función Ejecutar desde línea se puede deshabilitar en la página de configuración.
+A gcode program can be started at any line by clicking on the desired line in the gcode display while in AUTO mode. +
+It is the operator's responsibility to ensure the machine is in the desired operational mode. +
+A dialog will be shown allowing the spindle direction and speed to be preset. +
+The start line is indicated in the box labelled LINE, next to the CYCLE START button. +
+The run from line feature can be disabled in the settings page.
 
 [NOTE]
-La ejecución de Linuxcnc no es muy fácil de usar. p.ej. No arranca el husillo ni confirma la herramienta adecuada.
-No maneja bien las subrutinas. Si se usa, es mejor comenzar con un movimiento rápido.
+Linuxcnc's run-from-line is not very user friendly. eg. It does not start the spindle or confirm the proper tool.
+It does not handle subroutines well. If used it is best to start on a rapid move.
 
-== Botones láser
+== Laser buttons
 
-El botón LASER ON / OFF está destinado a encender o apagar una salida que está conectada a un pequeño proyector láser en forma de cruz.
-Cuando la cruz se coloca sobre un punto de referencia deseado en la pieza de trabajo, se puede presionar el botón REF LÁSER que luego se establece
-los desplazamientos X e Y a los valores indicados por los campos DESPLAZAMIENTO LÁSER en la página Configuración y el archivo INI.
+The LASER ON/OFF button in intended to turn an output on or off which is connected to a small laser crosshair projector.
+When the crosshair is positioned over a desired reference point on the workpiece, the REF LASER button can be pushed which then sets
+the X and Y offsets to the values indicated by the LASER OFFSET fields in the Settings page and the INI file.
 
-== Pestaña de configuración
-Es posible cargar el archivo Html (finalización .html) con notas de configuración. Se mostrarán en la pestaña de configuración. +
-Algunos programas, como Fusion y Aspire, crearán estos archivos por usted.
+== Setup Tab
+It's possible to load Html file (.html ending) with setup notes. They will be displayed in the setup tab. +
+Some program, such as Fusion and Aspire will create this files for you.
 
-.qtdragon - Ejemplo de pestaña de configuración
+.qtdragon - Setup Tab Sample
 image::images/silverdragon_setup.png["QTDragon Setup Tab",scale="25%"]
 
-== Estilos
+== Styles
 
-Casi todos los aspectos de la apariencia de la GUI son configurables a través del archivo de hoja de estilo qtdragon.qss. El archivo se puede editar manualmente o
-a través del widget de diálogo de la hoja de estilo en la GUI. Para abrir el cuadro de diálogo, presione F12 en la ventana principal. Se pueden aplicar nuevos estilos.
-temporalmente y luego se guarda en un nuevo archivo qss, o sobrescribe el archivo qss actual.
+Nearly all aspects of the GUI appearance are configurable via the qtdragon.qss stylesheet file. The file can be edited manually or 
+through the stylesheet dialog widget in the GUI. To call up the dialog, press F12 on the main window. New styles can be applied
+temporarily and then saved to a new qss file, or overwrite the current qss file.
 
-.qtdragon - Dos ejemplos de estilo
+.qtdragon - Two Style Examples
 image::images/style-comparison.png["QTDragon stlyes",scale="25%"]
 
-== Resolución de pantalla
+== Screen resolution
 
-Esta GUI se desarrolló inicialmente para una pantalla con una resolución de 1440 x 900. No es redimensionable. Funcionará en modo ventana en
-cualquier monitor con mayor resolución pero no en monitores con menor resolución.
+This GUI was initially developed for a screen with 1440 x 900 resolution. It is not resizable. It will work in window mode on
+any monitor with higher resolution but not on monitors with lower resolution.
 
-== Personalización
+== Customization
 
-Todos los aspectos de la GUI son totalmente personalizables a través de qtdesigner. Esto se incluye con el entorno de desarrollo qtvcp.
-El uso extensivo de widgets qtvcp mantiene la cantidad de código python requerido al mínimo, permitiendo modificaciones relativamente fáciles.
-El sitio web LinuxCNC tiene una extensa documentación sobre la instalación y el uso de las bibliotecas qtvcp.
-<< cha: qtvcp, QtVCP Overview >> para más información
+All aspects of the GUI are fully customizable through qtdesigner. This is included with the qtvcp development environment.
+The extensive use of qtvcp widgets keeps the amount of required python code to a minimum, allowing relatively easy modifications.
+The LinuxCNC website has extensive documentation on the installation and use of qtvcp libraries.
+<<cha:qtvcp,QtVCP Overview>> for more information
 
-.qtdragon - Silverdragon personalizado
+.qtdragon - Customized Silverdragon
 image::images/silverdragon_custom.png["QTDragon customized",scale=25]
-
 
