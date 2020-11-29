@@ -1,0 +1,47 @@
+files:
+  - source: /src/po/*.po
+    translation: /%original_path%/%two_letters_code%/%original_file_name%
+  - source: /**/*.md
+    ignore:
+      - '*_es.md'
+    translation: /%original_path%/%file_name%_%two_letters_code%.md
+  - source: /**/*.txt
+    ignore:
+      - '*_es.txt'
+    translation: /%original_path%/%file_name%_%two_letters_code%.%file_extension%
+  - source: /**/README
+    ignore:
+      - '*.md'
+      - '*_es'
+    translation: /%original_path%/%file_name%_%two_letters_code%
+  - source: README.changes
+    translation: /%original_path%/%original_file_name%_%two_letters_code%
+  - source: AUTHORS
+    translation: /%original_path%/%file_name%_%two_letters_code%
+  - source: INSTALL
+    ignore:
+      - '*_*'
+    translation: /%original_path%/%file_name%_%two_letters_code%
+  - source: UPDATING
+    translation: /%original_path%/%file_name%_%two_letters_code%
+  - source: '*.html'
+    ignore:
+      - '*_es.html'
+      - '*_fr.html'
+    translation: /%original_path%/%file_name%_%two_letters_code%.html
+  - source: /docs/man/man1
+    translation: /docs/man/%two_letters_code%/man1/%original_file_name%
+  - source: /docs/man/man3
+    translation: /docs/man/%two_letters_code%/man3/%original_file_name%
+  - source: /docs/man/man9
+    translation: /docs/man/%two_letters_code%/man9/%original_file_name%
+  - source: COPYING
+    ignore:
+      - '*.more'
+    translation: /%original_path%/%original_file_name%_%two_letters_code%
+  - source: COPYING.more
+    translation: /%original_path%/%original_file_name%_%two_letters_code%
+  - source: TODO
+    translation: /%original_path%/%original_file_name%_%two_letters_code%
+  - source: VERSION
+    translation: /%original_path%/%original_file_name%_%two_letters_code%
