@@ -1,30 +1,26 @@
-:lang: fr
-:ascii-ids:
-:toc:
-:localdate: {sys: date +%d/%m/%Y}
 :lversion: {sys: cat ../VERSION}
 Guide de démarrage V{lversion}, {localdate}
 ===========================================
-
-[NOTE]
-Cette documentation n'a pas été mise à jour depuis LinuxCNC version 2.5,
-publiée en 2012.
-C'est très dépassé. Veuillez utiliser la documentation en anglais.
-Si vous souhaitez mettre à jour cette traduction, veuillez contacter
-l'équipe LinuxCNC via le forum ou la liste de diffusion.
-
+:toc:
 :masterdir: {indir}
+
+The LinuxCNC Team
+
 :leveloffset: 1
 
 image::common/images/emc2-intro.*[]
 
-The LinuxCNC Team
-
 include::common/overleaf_fr.txt[]
 
-// include::common/outdated-notice_fr.txt[]
+include::getting-started/about-linuxcnc.txt[]
+
+include::getting-started/system-requirements.txt[]
 
 include::getting-started/Getting-Started-with-LinuxCNC.contents-fr.txt[]
+
+include::getting-started/updating-linuxcnc.txt[]
+
+include::common/glossary.txt[]
 
 include::common/GPLD_Copyright_fr.txt[]
 

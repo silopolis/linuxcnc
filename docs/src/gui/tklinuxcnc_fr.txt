@@ -1,288 +1,262 @@
-:lang: fr
-:toc:
+[[cha:tklinuxcnc-gui]]
 
-= L'interface graphique TkLinuxCNC
-
-[[cha:TkLinuxCNC]]
+= TkLinuxCNC GUI
 
 == Introduction
 
-TkLinuxCNC(((tklinuxcnc))) est l'interface utilisateur graphique la plus
-populaire après Axis, c'est l'interface traditionnelle de LinuxCNC. Elle est
-écrite en Tcl(((Tcl))) et utilise le toolkit Tk(((Tk))) pour
-l'affichage. Le fait d'être écrite en TCL la rend vraiment très
-portable (elle fonctionne sur une multitude de plateformes).
+TkLinuxCNC is one of the first graphical front-ends
+for LinuxCNC. It is written in Tcl and uses the Tk toolkit
+for the display. Being written in Tcl makes it very portable (it runs on a
+multitude of platforms). A separate backplot window can be displayed as
+shown.
 
-[[cap:affichage-TkLinuxCNC]]
-.L'affichage de TkLinuxCNC
+.TkLinuxCNC Window
 
-image::images/tklinuxcnc_fr.png[alt="L'affichage de TkLinuxCNC"]
+image::images/tkemc.png[align="center", alt="TkLinuxCNC Window"]
 
-== Utiliser TkLinuxCNC
+== Getting Started
 
-Pour sélectionner l'interface graphique TkLinuxCNC avec LinuxCNC, éditer le
-fichier .ini et dans la section [DISPLAY] modifier l'affichage comme
-ci-dessous:
+To select TkLinuxCNC as the front-end for LinuxCNC, edit the .ini file. In the
+section '[DISPLAY]' change the 'DISPLAY' line to read
+
 ----
 DISPLAY = tklinuxcnc
 ----
 
-Puis, lancer LinuxCNC et choisir ce fichier ini. La configuration qui se
-trouve dans _sim/tklinuxcnc/tklinuxcnc.ini_ est déjà configurée pour utiliser TkLinuxCNC
-comme interface utilisateur.
+Then, start LinuxCNC and select that ini file. The sample configuration
+'sim/tklinuxcnc/tklinuxcnc.ini' is already configured to use TkLinuxCNC as its front-end.
 
-Quand LinuxCNC est lancé avec TkLinuxCNC, une fenêtre 
-<<cap:affichage-TkLinuxCNC,comme celle-ci s'affiche>>.
+=== A typical session with TkLinuxCNC
 
-=== Une session typique avec TkLinuxCNC
+. Start LinuxCNC and select a configuration file.
+. Clear the 'E-STOP' condition and turn the machine on (by
+ pressing F1 then F2).
+. 'Home' each axis.
+. Load the file to be milled.
+. Put the stock to be milled on the table.
+. Set the proper offsets for each axis by jogging and either homing
+ again or right-clicking an axis name and entering an offset value.
+ footnote:[For some of these actions it might be necessary to change the
+ mode LinuxCNC is currently running in.]
+. Run the program.
+. To mill the same file again, return to step 6. To mill a different
+ file, return to step 4. When you're done, exit LinuxCNC.
 
- . Lancer LinuxCNC et sélectionner un fichier de configuration.
- . Libérer l'_Arrêt d'Urgence_(((A/U))) et mettre la machine en marche
-   (en pressant F1 puis F2).
- . Faire l'_Origine(((Origine Machine))) Machine_ de chacun des axes.
- . Charger un fichier d'usinage.
- . Brider le brut à usiner sur la table.
- . Faire l'_Origine (((Origine Piece)))Pièce_ de chacun des axes, à
-   l'aide du jog ou en introduisant une valeur de décalage d'origine après
-   un clic droit sur le nom d'un axe.
- . Lancer le programme.
- . Pour refaire une autre pièce identique, reprendre à l'étape 6. Pour
-   usiner une pièce différente, reprendre à l'étape 4. Quand c'est
-   terminé, quitter LinuxCNC.
+== Elements of the TkLinuxCNC window
 
-== Éléments affichés par TkLinuxCNC
+The TkLinuxCNC window contains the following elements:
 
-La fenêtre TkLinuxCNC contient les éléments suivants:
+* A menubar that allows you to perform various actions
+* A set of buttons that allow you to change the current working mode,
+  start/stop spindle and other relevant I/O
+* Status bar for various offset related displays
+* Coordinate display area
+* A set of sliders which control 'Jogging speed', 'Feed Override' 
+  , and 'Spindle speed Override' which allow you to increase or
+  decrease those settings
+* Manual data input text box 'MDI'
+* Status bar display with active G-codes, M-codes, F- and S-words
+* Interpreter related buttons
+* A text display area that shows the G-code source of the loaded file
 
- - Une barre de menu permettant diverses actions;
- - Un jeu de boutons permettant d'agir sur le mode de travail,
-   Marche/Arrêt de la broche et autres éléments;
- - Une barre de statut pour l'affichage des différents offsets;
- - Une zone d'affichage des coordonnées;
- - Un jeu de curseurs pour contrôler la 
-   _vitesse de jog(((vitesse de jog)))_, le 
-   _Correcteur de vitesse d'avance(((correcteur de vitesse)))_ et 
-   le _Correcteur de vitesse broche(((correcteur vitesse broche)))_ qui
-   permettent d'augmenter ou de diminuer ces vitesses ;
- - Une boîte d'entrée de données manuelles(((MDI))); 
- - Une barre de statut affichant le bloc de programme actif, G-codes,
-   M-codes, mots F et S;
- - Les boutons relatifs à l'interpréteur;
- - Une zone d'affichage de texte montrant le G-code du programme chargé.
+=== Main buttons
 
-=== Boutons principaux
+From left to right, the buttons are:
 
-Dans la première ligne de la gauche vers la droite et cycliquement:
+* Machine enable: 'ESTOP' > 'ESTOP RESET' > 'ON' 
+* Toggle mist coolant
+* Decrease spindle speed
+*  Set spindle direction 'SPINDLE OFF' > 'SPINDLE FORWARD' .
+ 'SPINDLE REVERSE'
+* Increase spindle speed
+* Abort
 
- .  Marche Machine: _Arrêt d'Urgence(((A/U)))_ 
-   _Arrêt d'Urgence relâché_ / _Marche_ 
- . Bascule gouttelettes(((Gouttelettes)))
- . Broche moins vite
- . Direction de rotation de la broche(((broche))) _Arrêt broche_ /
-   _Broche sens horaire_ / _Broche sens anti-horaire_
- . Broche plus vite
- . Annuler
+then on the second line:
 
-puis dans la deuxième ligne:
+* Operation mode: 'MANUAL' > 'MDI' > 'AUTO'
+* Toggle flood coolant
+* Toggle spindle brake control
 
- . Mode de marche: _MANUEL(((Manuel)))_ / _MDI(((MDI))))_ / _AUTO(((Auto)))_
- . Bascule d'arrosage
- . Bascule du contrôle frein de broche
+=== Offset display status bar
 
-=== Barre de statut des différents offsets
+The Offset display status bar displays the currently selected tool
+(selected with Txx M6), the tool length offset (if active), and the
+work offsets (set by right-clicking the coordinates).
 
-Elle affiche, l'offset de rayon de l'outil courant (sélectionné avec
-Txx M6), l'offset éventuel de longueur d'outil si il est actif et les
-offsets de travail (ajustables par un clic droit sur les coordonnées).
+=== Coordinate Display Area
 
-=== Zone d'affichage des coordonnées
+The main part of the display shows the current position of the tool.
+The color of the position readout depends on the state of the axis. If
+the axis is unhomed the axis will be displayed in yellow letters. Once
+homed it will be displayed in green letters. If there is an error with
+the current axis TkLinuxCNC will use red letter to show that. (for example
+if an hardware limit switch is tripped).
 
-La partie principale affiche la position courante de l'outil. La
-couleur varie selon l'état de l'axe. Si l'axe n'est pas référencé il
-est affiché en caractères jaunes. Si il est référencé il s'affiche en
-vert. Si il est en erreur, TkLinuxCNC l'affiche en rouge pour montrer un
-défaut. (par exemple si un contact de fin de course est activé).
+To properly interpret these numbers, refer to the radio boxes on the
+right. If the position is 'Machine', then the displayed number is in
+the machine coordinate system. If it is 'Relative', then the displayed
+number is in the offset coordinate system. Further down the choices can
+be 'actual' or 'commanded'. Actual refers to the feedback coming from
+encoders (if you have a servo machine), and the 'commanded' refers to
+the position command send out to the motors. These values can differ
+for several reasons: Following error, deadband, encoder resolution, or
+step size. For instance, if you command a movement to X 0.0033 on your
+mill, but one step of your stepper motor is 0.00125, then the
+'Commanded' position will be 0.0033 but the 'Actual' position will be
+0.0025 (2 steps) or 0.00375 (3 steps).
 
-Pour interpréter correctement les différentes valeurs, se référer aux
-boutons de droite. Si la position est _Machine_, alors la valeur
-affichée est en coordonnées machine. Si elle est _Relative_, la valeur
-affichée est en coordonnées pièce. Deux autres en dessous indiquent
-_actuelle_ ou _commandée_. Actuelle fait référence aux valeurs retournées
-par les codeurs (si la machine est équipée de servomoteurs) et
-_commandée_ fait référence à la position à atteindre envoyée aux
-moteurs. Ces valeurs peuvent différer pour certaines raisons: Erreur de
-suivi, bande morte, résolution d'encodeur ou taille de pas. Par
-exemple, si un mouvement est commandé vers X0.08 sur une fraiseuse,
-mais qu'un pas moteur fait 0.03, alors la position _Commandée_ sera
-0.03 mais la position _Actuelle_ sera soit 0.06 (2 pas) soit 0.09 (3
-pas).
+Another set of radio buttons allows you to choose between 'joint' and
+'world' view. These make little sense on a normal type of machine (e.g.
+trivial kinematics), but help on machines with non-trivial kinematics
+like robots or stewart platforms. (you can read more about kinematics
+in the Integrator Manual).
 
-Deux autres boutons permettent de choisir entre la vue _Articulation_ et
-la vue _Globale_. Cela a peu de sens avec les machines de type normal
-(cinématiques triviales), mais se révèle très utile sur les machines
-avec des cinématiques non triviales telles que les robots ou plateforme
-de Stewart. (Des informations plus complètes se trouvent dans le manuel
-de l'intégrateur).
+.Backplot
 
-==== Parcours d'outil
+When the machine moves, it leaves a trail called the backplot. You can
+start the backplot window by selecting View→Backplot.
 
-Quand la machine se déplace, elle laisse un tracé appelé parcours
-d'outil. La fenêtre d'affichage du parcours d'outil s'active via le
-menu _Vues → Parcours d'outil_.
+=== Automatic control
 
-=== Contrôle en automatique
+.Buttons for control
 
-[[cap:TkLinuxCNC-Interpreteur]]
-.Interpréteur de TkLinuxCNC
+The buttons in the lower part of TkLinuxCNC are used to control the execution of a
+program: 'Open' to load a program, 'Verify' to
+check it for errors, 'Run' to start the actual cutting,
+'Pause' to stop it while running, 'Resume' to
+resume an already paused program, 'Step' to advance one line
+in the program and 'Optional Stop' to toggle the
+optional stop switch (if the button is green the program execution will
+be stopped on any M1 encountered).
 
-image::images/tklinuxcnc_interp_fr.png[alt="Interpréteur de TkLinuxCNC"]
+.TkLinuxCNC Interpreter / program control
+image::images/tkemc-interp.png[align="center", alt="TkLinuxCNC Interpreter / program control"]
 
-==== Boutons de contrôle
+.Text Program Display Area
 
-Les boutons de contrôle de la partie inférieure de TkLinuxCNC, visibles sur
-l'image ci-dessus, sont utilisés pour l'exécution du
-programme:
+When the program is running, the line currently being executed is
+highlighted in white. The text display will automatically scroll to
+show the current line.
 
-* _Ouvrir_ (((ouvrir))) pour charger un fichier,
-* _Lancer_ (((lancer))) pour commencer l'usinage,
-* _Pause_ (((pause))) pour stopper temporairement l'usinage,
-* _Reprise_ (((reprise))) pour reprendre un programme mis en pause, 
-* _Pas à pas_ (((pas a pas))) pour avancer d'une seule ligne de programme,
-* _Vérifier_ (((vérifier))) pour vérifier si il contient des erreurs, 
-* _Arrêt optionnel_ (((arrêt optionnel))) pour basculer l'arrêt optionnel, si 
-   ce bouton est vert l'exécution du programme est stoppée quand un code M1 
-   est rencontré.
+=== Manual Control
 
-==== Zone texte d'affichage du programme
+.Implicit keys
 
-Quand un programme est lancé, la ligne courante est affichée en
-surbrillance blanche. L'affichage du texte défile automatiquement pour
-montrer la ligne courante.
+TkLinuxCNC allows you to manually move the machine. This action is known as
+'jogging'. First, select the axis to be moved by clicking it. Then,
+click and hold the '+' or '-' button depending on the desired direction
+of motion. The first four axes can also be moved by the keyboard arrow keys 
+(X and Y), the PAGE UP and PAGE DOWN keys (Z) and the '[' and ']' keys (A/4th). 
 
-=== Contrôle en manuel
+If 'Continuous' is selected, the motion will continue as long as the
+button or key is pressed. If another value is selected, the machine
+will move exactly the displayed distance each time the button is
+clicked or the key is pressed. The available values are:
+'1.0000, 0.1000, 0.0100, 0.0010, 0.0001'
 
-==== Touches implicites
+By pressing 'Home' or the HOME key, the selected axis will be homed.
+Depending on your configuration, this may just set the axis value to be
+the absolute position 0.0, or it may make the machine move to a
+specific home location through use of 'home switches'. See the
+<<cha:homing-configuration,Homing Chapter>> for more information.
 
-TkLinuxCNC permet les déplacements manuels de la machine. Cette action
-s'appelle le _jog_. Premièrement, sélectionner l'axe à déplacer en
-cliquant dessus. Puis, cliquer et maintenir les boutons *+* ou *-*
-selon la direction du mouvement souhaité. Les quatre premiers axes
-peuvent aussi être déplacés à l'aide des touches fléchées pour les axes
-X et Y, Pg.préc et Pg.suiv pour l'axe Z et les touches [ et ] pour
-l'axe A.
+By pressing 'Override Limits', the machine will temporarily be
+permitted to jog outside the limits defined in the .ini file. (Note: if
+'Override Limits' is active the button will be displayed using a red
+color).
 
-Si _Continu_ est activé, le mouvement sera continu tant que la touche
-sera pressée, si une valeur d'incrément est sélectionnée, le mobile se
-déplacera exactement de cette valeur à chaque appui sur la touche ou à
-chaque clic. Les valeurs disponibles sont:
+.TkLinuxCNC Override Limits & Jogging increments example
 
-    1.0000 0.1000 0.0100 0.0010 0.0001
+image::images/tkemc-override-limits.png[align="center", alt="TkLinuxCNC Override Limits and Jogging increments example"]
 
-En cliquant le bouton _Origine_ ou en pressant la touche Origine,
-l'axe actif est référencé sur son origine machine. Selon la
-configuration, la valeur de l'axe peut être simplement mise à la
-position absolue 0.0, ou la machine peut se déplacer vers un point
-spécifique matérialisé par le _contact d'origine_. Voir le manuel de
-l'intégrateur pour plus de détails sur les prises d'origine.
+.The Spindle group
 
-En cliquant le bouton _Dépassement de limite_, la machine permet un
-jog temporaire pour même si l'axe à franchi une limite d'axe fixée dans
-le fichier .ini. Noter que si _Dépassement de limite_ est activé il
-s'affiche en rouge.
+The button on the first row selects the direction for the spindle to
+rotate: Counterclockwise, Stopped, Clockwise. The buttons next to it
+allow the user to increase or decrease the rotation speed. The button
+on the second row allows the spindle brake to be engaged or released.
+Depending on your machine configuration, not all the items in this
+group may have an effect.
 
-[[cap:Override-Limits]]
-.Exemple de dépassement de limite et incréments de jog
+.The Coolant group
 
-image::images/tkemc-override-limits.png[alt="Exemple de dépassement de limite et incréments de jog"]
+The two buttons allow the 'Mist' and 'Flood' coolants to be turned on
+and off. Depending on your machine configuration, not all the items in
+this group may appear.
 
-==== Le groupe de boutons _Broche_(((broche)))
+=== Code Entry
 
-Le bouton central du dessus sélectionne le sens de rotation de la
-broche: Anti-horaire, Arrêt, Horaire. Les boutons fléchés augmentent ou
-diminuent la vitesse de rotation. Le bouton central du dessous permet
-d'engager ou de relâcher le frein de broche. Selon la configuration de
-la machine, les items de ce groupe ne sont peut être pas tous visibles.
+Manual Data Input (also called MDI), allows G-code programs to be
+entered manually, one line at a time. When the machine is not turned
+on, and not set to MDI mode, the code entry controls are unavailable.
 
-==== Le groupe de boutons _Arrosage_(((arrosage)))
+.The Code Entry tab
 
-Ces deux boutons permettent d'activer ou non les lubrifiants
-_Gouttelettes_ et _Arrosage_. Selon la configuration de la machine, les
-items de ce groupe ne sont peut être pas tous visibles.
+image::images/tkemc-mdi.png[align="center", alt="The Code Entry tab"]
 
-=== Entrée manuelle de G-code (MDI)
+.MDI:
 
-L'entrée manuelle de données (aussi appelée MDI), permet d'entrer et
-d'exécuter des lignes de G-code, une à la fois. Quand la machine n'est
-pas en marche ni mise en mode MDI, l'entrée de code n'est pas possible.
+This allows you to enter a g-code command to be executed. Execute the
+command by pressing Enter.
 
-.Le champ de saisie des entrées manuelles
+.Active G-Codes
 
-image::images/tkemc-mdi.png[alt="Le champ de saisie des entrées manuelles"]
+This shows the 'modal codes' that are active in the interpreter. For
+instance, 'G54' indicates that the 'G54 offset' is applied to all
+coordinates that are entered.
 
-docs: image alt-tags added
-Signed-off-by: Thoren Seufl <t_seufl@gmx.de>==== MDI:
+=== Jog Speed 
 
-Le mode MDI permet d'exécuter une commande en G-code en pressant la
-touche _Entrée_.
+By moving this slider, the speed of jogs can be modified. The numbers
+above refer to axis units / second. The text box with the number is
+clickable. Once clicked a popup window will appear, allowing for a
+number to be entered.
 
-==== G-Codes actifs
+=== Feed Override
 
-Ce champs montre les _codes modaux_ actuellement actifs dans
-l'interpréteur. Par exemple, *G54* indique que le système de
-coordonnées courant est celui de G54 et qu'il s'applique à toutes les
-coordonnées entrées.
+By moving this slider, the programmed feed rate can be modified. For
+instance, if a program requests 'F60'  and the slider is set to 120%,
+then the resulting feed rate will be
+72. The text box with the number is clickable. Once clicked a popup
+window will appear, allowing for a number to be entered.
 
-=== Vitesse de Jog 
+=== Spindle speed Override
 
-En déplaçant ce curseur, la vitesse de jog peut être modifiée. Le
-nombre indique une vitesse en unités par minute. Le champs de texte est
-cliquable. Un clic ouvre un dialogue permettant d'entrer un nombre.
+The spindle speed override slider works exactly like the feed override
+slider, but it controls to the spindle speed. If a program requested
+S500 (spindle speed 500 RPM), and the slider is set to 80%, then the
+resulting spindle speed will be 400 RPM. This slider has a minimum and
+maximum value defined in the ini file. If those are missing the slider
+is stuck at 100%. The text box with the number is clickable. Once
+clicked a popup window will appear, allowing for a number to be
+entered.
 
-=== Correcteur de vitesse d'avance travail
+== Keyboard Controls
 
-En déplaçant ce curseur, la vitesse d'avance travail peut être
-modifiée. Par exemple, si la vitesse d'avance travail du programme est
-*F600*  et que le curseur est placé sur 120%, alors la vitesse d'avance
-travail sera de 720. Le champs de texte est cliquable. Un clic ouvre un
-dialogue permettant d'entrer un nombre.
+Almost all actions in TkLinuxCNC can be accomplished with the keyboard.
+Many of the shortcuts are unavailable when in MDI mode.
 
-=== Correcteur de vitesse de broche
+The most frequently used keyboard shortcuts are shown in the
+following table.
 
-Le fonctionnement de ce curseur est le même que celui de la vitesse
-d'avance, mais il contrôle la vitesse de rotation de la broche. Si le
-programme demande S500 (broche à 500 tr/mn) et que le curseur est placé
-sur 80%, alors la vitesse de broche résultante sera de 400 tr/mn. Le
-minimum et le maximum pour ce curseur sont définis dans le fichier ini.
-Par défaut le curseur est placé sur 100%. Le champs de texte est
-cliquable. Un clic ouvre un dialogue permettant d'entrer un nombre.
+.Most Common Keyboard Shortcuts
 
-== Raccourcis clavier
-
-La plupart des actions de TkLinuxCNC peuvent être accomplies au clavier.
-Beaucoup des raccourcis clavier ne sont pas accessibles en mode MDI.
-
-Les raccourcis clavier les plus fréquemment utilisés sont montrés dans
-la table ci-dessous.
-
-[[cap:Raccourcis-clavier-frequents]]
-.Les raccourcis clavier les plus utilisés
-
-[width="90%", options="header"]
+[width="75%", options="header", cols="1^,3<"]
 |========================================
-|Touche           | Action
-|F1               | Bascule de l'Arrêt d'Urgence
-|F2               | Marche/Arrêt machine
-|*, 1 .. 9, 0     | Correcteur vitesse d'avance 0% à 100%
-|X, *             | Active le premier axe
-|Y, 1             | Active le deuxième axe
-|Z, 2             | Active le troisième axe
-|A, 3             | Active le quatrième axe
-|Origine          | POM de l'axe actif
-|Gauche, Droite   | Jog du premier axe
-|Haut, Bas        | Jog du deuxième axe
-|Pg.prec, Pg.suiv | Jog du troisième axe
-|[, ]             | Jog du quatrième axe
-|Echap            | Arrête l'exécution
+|Keystroke | Action Taken
+|F1 | Toggle Emergency Stop
+|F2 | Turn machine on/off
+|`, 1 .. 9, 0 | Set feed override from 0% to 100%
+|X, ` | Activate first axis
+|Y, 1 | Activate second axis
+|Z, 2 | Activate third axis
+|A, 3 | Activate fourth axis
+|Home | Send active axis Home
+|Left, Right | Jog first axis
+|Up, Down | Jog second axis
+|Pg Up, Pg Dn | Jog third axis
+|[, ] | Jog fourth axis
+|ESC | Stop execution
 |========================================
 
 

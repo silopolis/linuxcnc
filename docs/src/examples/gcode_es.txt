@@ -1,77 +1,76 @@
 [[cha:gcode-examples]]
 
-= Ejemplos de código G
+= G Code Examples
 
-Después de instalar LinuxCNC, se colocan varios archivos de muestra en la carpeta
-/nc_files. Asegúrese de que el archivo de muestra sea apropiado para su
-máquina antes de correrlo.
+After you install LinuxCNC several sample files are placed in the
+/nc_files folder. Make sure the sample file is appropriate for your
+machine before running.
 
-== Ejemplos de fresado
+== Mill Examples
 
-=== Fresado helicoidal
+=== Helical Hole Milling
 
-Nombre de archivo: useful-subroutines.ngc
+File Name: useful-subroutines.ngc
 
-Descripción: Subrutina para fresar un agujero utilizando parámetros.
+Description: Subroutine for milling a hole using parameters.
 
-=== Ranurado
+=== Slotting
 
-Nombre de archivo: useful-subroutines.ngc
+File Name: useful-subroutines.ngc
 
-Descripción: Subrutina para fresar una ranura usando parámetros.
+Description: Subroutine for milling a slot using parameters.
 
-=== Sondeo en cuadrícula
+=== Grid Probe
 
-Nombre de archivo: gridprobe.ngc
+File Name: gridprobe.ngc
 
-Descripción: sondeo rectangular
+Description: Rectangular Probing
 
-Este programa prueba repetidamente en una cuadrícula XY normal y escribe la
-ubicación sondeada al archivo 'probe-results.txt' en el mismo directorio
-que el archivo .ini.
+This program repeatedly probes in a regular XY grid and writes the
+probed location to the file 'probe-results.txt' in the same directory
+as the .ini file.
 
-=== Sonda inteligente
+=== Smart Probe
 
-Nombre de archivo: smartprobe.ngc
+File Name: smartprobe.ngc
 
-Descripción: sondeo rectangular
+Description: Rectangular Probing
 
-Este programa prueba repetidamente en una cuadrícula XY normal y escribe la
-ubicación sondeada al archivo 'probe-results.txt' en el mismo directorio
-que el archivo .ini. Es una mejora del archivo de sondeo de cuadrícula.
+This program repeatedly probes in a regular XY grid and writes the
+probed location to the file 'probe-results.txt' in the same directory
+as the .ini file. This is improved from the grid probe file.
 
-=== Sondeo de longitud de herramienta
+=== Tool Length Probe
 
-Nombre de archivo: tool-length-probe.ngc
+File Name: tool-length-probe.ngc
 
-Descripción: Sondeo de longitud de herramienta
+Description: Tool Length Probing
 
-Este programa muestra un ejemplo de cómo medir longitudes de herramientas
-automáticamente usando un interruptor conectado a la entrada de la sonda. Esto es útil
-para máquinas sin portaherramientas, donde la longitud de una herramienta es
-diferente cada vez que se inserta.
+This program shows an example of how to measure tool lengths
+automatically using a switch hooked to the probe input. This is useful
+for machines without tool holders, where the length of a tool is
+different every time it is inserted.
 
-=== Sonda de agujero
+=== Hole Probe
 
-Nombre de archivo: probe-hole.ngc
+File Name: probe-hole.ngc
 
-Descripción: Encontrar el centro y el diámetro de un agujero.
+Description: Finding the Center and Diameter of a hole.
 
-El programa muestra cómo encontrar el centro de un agujero, medir el
-diámetro del agujero y registrar los resultados.
+The program demonstrates how to find the center of a hole, measure the
+hole diameter and record the results.
 
-=== Compensación del cortador
+=== Cutter Compensation
 
-Para ser agregado
+To be added
 
-== Ejemplos de torno
+== Lathe Examples
 
-=== Roscado
+=== Threading
 
-Nombre de archivo lathe-g76.ngc
+File Name lathe-g76.ngc
 
-Descripción: Refrentado, roscado y tronzado.
+Description: Facing, threading and parting off.
 
-Este archivo muestra un ejemplo de roscado en un torno utilizando parámetros.
-
+This file shows an example of threading on a lathe using parameters.
 

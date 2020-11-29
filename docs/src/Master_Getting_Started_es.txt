@@ -1,16 +1,8 @@
 :lversion: {sys: cat ../VERSION}
-Primeros Pasos V{lversion}, {localdate}
+Getting Started V{lversion}, {localdate}
 ========================================
-:lang: es
+:lang: en
 :masterdir: {indir}
-
-[NOTE]
-Esta documentación no se ha actualizado desde LinuxCNC versión 2.5,
-lanzada en 2012.
-Está muy desactualizado. Utilice la documentación en inglés.
-Si desea actualizar esta traducción, póngase en contacto con el equipo
-de LinuxCNC a través del foro o la lista de correo.
-
 
 The LinuxCNC Team
 
@@ -18,19 +10,18 @@ The LinuxCNC Team
 
 image::common/images/emc2-intro.*[]
 
-include::common/overleaf_es.txt[]
+include::common/overleaf.txt[]
 
-include::getting-started/about-linuxcnc_es.txt[]
+include::getting-started/about-linuxcnc.txt[]
 
-include::getting-started/system-requirements_es.txt[]
+include::getting-started/system-requirements.txt[]
 
-include::getting-started/getting-linuxcnc_es.txt[]
+include::getting-started/getting-linuxcnc.txt[]
 
-include::getting-started/updating-linuxcnc_es.txt[]
+include::getting-started/updating-linuxcnc.txt[]
 
-include::common/glossary_es.txt[]
+include::common/glossary.txt[]
 
-include::common/gpld-copyright_es.txt[]
+include::common/gpld-copyright.txt[]
 
 // vim: set syntax=asciidoc:
-

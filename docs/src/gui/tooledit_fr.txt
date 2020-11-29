@@ -1,112 +1,96 @@
-:lang: fr
-:toc:
+[[cha:tooledit-gui]]
 
-= Éditeur graphique de table d'outils
+= Tool Edit GUI
 
-[[cha:editeur-tooledit]] 
+== Overview
 
-== Versions requises pour l'éditeur d'outils
-[NOTE]
-Les éléments de tooledit modifiables décrits ici sont disponibles
-dans les versions 2.5.1 et suivantes. Dans la version 2.5.0, l'interface
-graphique ne permet pas ces ajustements.
+image::images/tooledit.png[align="center", width="640", alt="Tool Edit GUI - Overview"]
 
-image::images/tooledit_fr.png[align="left", width="640", alt="Éditeur graphique de table d’outils"]
+The 'tooledit' program can update the tool table file with
+edited changes by using the SaveFile button.  The SaveFile button
+updates the system file but a separate action is required to
+update the tool table data used by a running LinuxCNC instance.
+With the axis GUI, both the file and the current tool table data
+used by LinuxCNC can be updated with the ReloadTable button.
+This button is enabled only when the machine is ON and IDLE.
 
-Le programme tooledit rafraichi le fichier de la table d'outils avec les
-changements édités puis enregistrés avec le bouton _EnregistrerFichier_.
-Le bouton _EnregistrerFichier_ met à jour le fichier système mais une action
-manuelle dans le menu _Fichier -> Recharger la table d'outils_ est requise pour
-mettre à jour la table d'outils en cours d'utilisation par l'instance courante
-de LinuxCNC. Avec l'interface graphique Axis, il est toutefois possible, grâce
-au bouton _RechargerTable_, de rafraichir le fichier tout en mettant à jour la
-table d'outils courante. Ce dernier bouton est disponible uniquement quand la
-machine est _En marche_ et inactive.
+== Column Sorting
 
-== Choix des colonnes
-Par défaut, le programme tooledit affiche toutes les colonnes utilisables dans
-une table d'outils. Très peu de machines utilisent tous les paramètres,
-les colonnes affichées peuvent être limitées aux paramètres utilisés. Pour cela,
-passer une ligne de paramètre dans le fichier ini, comme ci-dessous:
+The tool table display can be sorted on any column in ascending
+order by clicking on the column header.  A second click sorts
+in descending order.  Column sorting requires that the machine
+is configured with the default tcl version >= 8.5.
 
-.Syntaxe
+image::images/tooledit-sort.png[align="center", alt="Tool Edit GUI - Column Sorting"]
+
+Depending upon other applications installed on the system, it may be
+necessary to enable tcl/tk8.5 with the commands:
+----
+sudo update-alternatives --config tclsh  ;# select the option for tclsh8.5
+sudo update-alternatives --config wish   ;# select the option for wish8.5
+----
+
+== Column Selection
+By default, the 'tooledit' program will display all possible
+tool table parameter columns.  Since few machines use all
+parameters, the columns displayed can be limited with the
+following ini file setting:
+
+image::images/tooledit-columns.png[align="center", alt="Tool Edit GUI - Column Selection"]
+
+.INI File Syntax
 ----
 [DISPLAY]
-TOOL_EDITOR = tooledit nom_colonne nom_colonne ...
+TOOL_EDITOR = tooledit column_name column_name ...
 ----
 
-.Exemple pour les colonnes Z et DIAM
+.Example for Z and DIAM columns
 ----
 [DISPLAY]
 TOOL_EDITOR = tooledit Z DIAM
 ----
 
-.Résultat obtenu
-image::images/tooledit-columns_fr.png[align="left", alt="Éditeur graphique de table d’outils - Choix des colonnes"]
+== Stand Alone Use
+The 'tooledit' program can also be invoked as a standalone
+program. For example, if the program is in the user PATH, typing
+'tooledit' will show the usage syntax:
 
-== Tri par colonne
-Les outils de la table affichée peuvent être triés selon n'importe quelle
-colonne, par ordre croissant ou décroissant, en cliquant sur l'entête de la
-colonne. Un second clic inverse l'ordre de tri. Le tri par colonne nécessite
-une version de TCL/TK >= 8.5
-
-image::images/tooledit-sort_fr.png[align="left", alt="Éditeur graphique de table d’outils - Tri par colonne"]
-
-Sous Ubuntu Lucid 10.04 tcl/tk8.4 est installé par défaut. Il est possible
-d'ajouter tcl/tk8.5 avec la commande suivante:
-----
-sudo apt-get install tcl8.5 tk8.5
-----
-
-Si le tri ne fonctionne pas il peut être nécessaire d'activer tcl/tk8.5 avec
-les commandes:
-----
-sudo update-alternatives --config tclsh  ;# choisir l'option pour tclsh8.5
-sudo update-alternatives --config wish   ;# choisir l'option pour wish8.5
-----
-
-== Utilisation autonome
-Le programme _tooledit_ peut aussi être invoqué comme un programme autonome.
-Par exemple si le programme est dans le PATH de l'utilisateur, taper _tooledit_
-en suivant une des syntaxes suivantes selon le besoin:
-
-.Tooledit autonome
+.Stand Alone
 ----
 tooledit
 Usage:
-tooledit nomfichier
-tooledit [colonne_1 ... colonne_n] nomfichier
+tooledit filename
+tooledit [column_1 ... column_n] filename
 ----
 
-Pour synchroniser un tooledit autonome avec l'application LinuxCNC courante,
-le nom de fichier doit être le même que celui spécifié par le paramètre
-*[EMCIO]TOOL_TABLE* dans le fichier ini.
+To synchronize a standalone 'tooledit' with a running LinuxCNC
+application, the filename must resolve to the same [EMCIO]TOOL_TABLE
+filename specified in the LinuxCNC ini file.
 
-Lors de l'utilisation de tooledit pendant la marche de LinuxCNC,
-l'exécution d'un g-code ou d'un autre programme peut altérer les données de la
-table d'outils. Toute modification est alors détectée par tooledit qui affiche
-le message: Attention: Fichier modifié par un autre process
+When using the program 'tooledit' while LinuxCNC is running,
+gcode command execution or other programs may alter tool table
+data and the tool table file.  File changes are detected by
+'tooledit' and a message is displayed:
 
-image::images/tooledit-warning_fr.png[align="left", alt="Éditeur graphique de table d’outils - Utilisation autonome"]
+  Warning: File changed by another process
 
-L'affichage de la table d'outils dans tooledit peut être rafraichi par le
-bouton _Relire_, pour relire le fichier modifié.
+The 'tooledit' tool table display can be updated to read the
+modified file with the ReRead button.
 
-Le nom de la table d'outils est spécifié dans le fichier ini par l'entrée:
-----
-[EMCIO]TOOL_TABLE = nom_fichier_table_
-----
+he tool table is specified in the ini file with an entry:
 
-Le fichier de table d'outils est éditable avec n'importe quel simple éditeur de
-texte. (et non avec un traitement de texte)
+  [EMCIO]TOOL_TABLE = tool_table_filename
 
-L'interface graphique Axis peut optionnellement utiliser un paramètre du fichier
-ini pour spécifier quel éditeur doit être utilisé:
-----
-[DISPLAY]TOOL_EDITOR = path_pour_editeur
-----
+The tool table file can be edited with any simple text editor (not
+a word processor).
 
-Par défaut, le programme tooledit est utilisé. Cet éditeur supporte tous les
-paramètres de table d'outils, permet l'ajout ou l'effacement d'outils et fourni
-un certain nombre de contrôles de validité des paramètres introduits.
+The axis GUI can optionally use an ini file setting to specify the tool
+editor program:
+
+  [DISPLAY]TOOL_EDITOR = path_to_editor_program
+
+By default, the program named 'tooledit' is used. This editor
+supports all tool table parameters, allows addition and deletion
+of tool entries, and performs a number of validity checks on
+parameter values.
 

@@ -1,76 +1,95 @@
-:lang: fr
-:toc:
+[[cha:kinematics]]
 
-= La cinématique dans LinuxCNC
-
-[[cha:Cinematique]]
+= Kinematics
 
 == Introduction
 
-Habituellement quand nous parlons de machines (((Machines CNC)))CNC,
-nous pensons à des machines programmées pour effectuer certains
-mouvements et effectuer diverses tâches. Pour avoir une représentation
-unifiée dans l'espace de ces machines, nous la faisons correspondre à
-la vision humaine de l'espace en 3D, la plupart des machines (sinon
-toutes) utilisent un système de coordonnées courant, le système
-Cartésien.
+When we talk about CNC machines, we usually think about machines that
+are commanded to move to certain locations and perform various tasks.
+In order to have an unified view of the machine space, and to make it
+fit the human point of view over 3D space, most of the machines (if not
+all) use a common coordinate system called the Cartesian Coordinate
+System.
 
-Le système de coordonnées Cartésiennes est composé de 3 axes (X, Y, Z)
-chacun perpendiculaire aux 2 autres. footnote:[Le mot _axes_ est aussi
-communément (et incorrectement) utilisé à
-propos des machines CNC, il fait référence aux directions des
-mouvements de la machine.]
+The Cartesian Coordinate system is composed of three axes (X, Y, Z) each
+perpendicular to the other two. footnote:[The word “axes” is also
+commonly (and wrongly) used when talking about
+CNC machines, and referring to the moving directions of the machine.]
 
-Quand nous parlons d'un programme G-code (RS274/NGC) nous parlons d'un
-certain nombre de commandes (G0, G1, etc.) qui ont comme paramètres (X-
-Y- Z-). Ces positions se référent exactement à des positions
-Cartésiennes. Une partie du contrôleur de mouvements de LinuxCNC est
-responsable de la translation entre ces positions et les positions
-correspondantes de la cinématique (((cinematique))) de la
-machinefootnote:[Cinématique: une fonction à deux voies pour
-transformer un espace Cartésien en espace à articulations].
+When we talk about a G-code program (RS274/NGC) we talk about a number
+of commands (G0, G1, etc.) which have positions as parameters (X- Y-
+Z-). These positions refer exactly to Cartesian positions. Part of the
+LinuxCNC motion controller is responsible for translating those positions
+into positions which correspond to the machine
+(((kinematics)))kinematics. footnote:[Kinematics: a two way function to
+transform from Cartesian space to joint space]
 
-=== Les articulations par rapport aux axes
+=== Joints vs. Axes
 
-Une articulation, pour une machine CNC est un des degrés physiques de
-liberté de la machine. Elle peut être linéaire (vis à billes) ou
-rotative (table tournante, articulations d'un bras robotisé). Il peut y
-avoir n'importe quel nombre d'articulations sur une machine. Par exemple,
-un robot classique dispose de 6 articulations et une fraiseuse classique
-n'en a que 3.
+A joint of a CNC machine is a one of the physical degrees of freedom
+of the machine. This might be linear (leadscrews) or rotary (rotary
+tables, robot arm joints). There can be any number of joints on a
+given machine. For example, one popular robot has 6 joints, and a
+typical simple milling machine has only 3.
 
-Sur certaines machines, les articulations sont placées de manière à
-correspondre aux axes cinématiques (articulation 0 le long de l'axe X,
-articulation 1 le long de l'axe Y et articulation 2 le long de l'axe Z), ces
-machines sont appelées machines Cartésiennes (((Machines
-Cartesiennes))) (ou encore machines à cinématiques triviales
-(((Cinematique triviale)))). Ce sont les machines les plus courantes
-parmi les machines-outils mais elles ne sont pas courantes dans
-d'autres domaines comme les machines de soudage (ex: robots de soudage
-de type puma).
+There are certain machines where the joints are laid out to match
+kinematics axes (joint 0 along axis X, joint 1 along axis Y, joint 2
+along axis Z), and these machines are called (((Cartesian
+machines)))Cartesian machines (or machines with (((Trivial
+Kinematics)))Trivial Kinematics). These are the most common machines
+used in milling, but are not very common in other domains of machine
+control (e.g. welding: puma-typed robots).
 
-== Cinématiques triviales
+LinuxCNC supports axes with names: X Y Z A B C U V W.  The X Y Z axes
+typically refer to the usual Cartesian coordinates. The A B C axes refer to
+rotational coordinates about the X Y Z axes respectively.  The U V W axes refer to
+additional coordinates that are commonly made colinear to the X Y Z axes respectively.
 
-Comme nous l'avons vu, il y a un groupe de machines sur lesquelles
-chacun des axes est placé le long d'un des axes Cartésiens. Sur ces
-machines le passage, du plan de l'espace Cartésien (le programme
-G-code) au plan de l'espace articulation (l'actuateur actuel de la
-machine), est trivial. C'est un simple plan 1:1:
+== Trivial Kinematics
+
+The simplest machines are those in which which each joint is placed
+along one of the Cartesian axes. On these machines the mapping from
+Cartesian space (the G-code program) to the joint space (the actual
+actuators of the machine) is trivial. It is a simple 1:1 mapping:
+
 ----
 pos->tran.x = joints[0];
 pos->tran.y = joints[1];
 pos->tran.z = joints[2];
-pos->a = joints[3];
-pos->b = joints[4];
-pos->c = joints[5];
 ----
 
-Dans l'extrait de code ci-dessus, nous pouvons voir comment le plan
-est fait: la position X est identique avec la articulation 0, Y avec la
-articulation 1 etc. Nous nous référons dans ce cas à une cinématique
-directe (une transformation avant), tandis que dans l'extrait de code
-suivant il est fait référence à une cinématique inverse (ou une
-transformation inverse):
+In the above code snippet one can see how the mapping is done: the X
+position is identical with the joint 0, the Y position with
+joint 1, etc. The above refers to the direct kinematics (one
+direction of the transformation).
+The next code snippet refers to the inverse kinematics (or the
+inverse direction of the transformation):
+
+----
+joints[0] = pos->tran.x;
+joints[1] = pos->tran.y;
+joints[2] = pos->tran.z;
+----
+
+In LinuxCNC, the identity kinematics are implemented with the
+'trivkins' kinematics module and extended to 9 axes.  The default
+relationships between axis coordinates and joint numbers are:
+
+----
+pos->tran.x = joints[0];
+pos->tran.y = joints[1];
+pos->tran.z = joints[2];
+pos->a      = joints[3];
+pos->b      = joints[4];
+pos->c      = joints[5];
+pos->u      = joints[6];
+pos->v      = joints[7];
+pos->w      = joints[8];
+----
+
+Similarly, the default relationships for inverse kinematics for trivkins
+are:
+
 ----
 joints[0] = pos->tran.x;
 joints[1] = pos->tran.y;
@@ -78,78 +97,129 @@ joints[2] = pos->tran.z;
 joints[3] = pos->a;
 joints[4] = pos->b;
 joints[5] = pos->c;
+joints[6] = pos->u;
+joints[7] = pos->v;
+joints[8] = pos->w;
 ----
 
-Comme on peut le voir, c'est assez simple de faire la transformation
-d'une machine à cinématique banale (ou Cartésienne). Cela devient un
-peu plus compliqué si il manque un axe à la machine.footnote:[Si la
-machine (par exemple un tour) est montée avec seulement les axes
-X, Z et A et que le fichier d'init de LinuxCNC contient uniquement la
-définition de ces 3 articulations, alors l'assertion précédente est fausse.
-Parce-que nous avons actuellement (joint0=x, joint1=Z, joint2=A) ce qui
-suppose que joint1=Y. Pour faire en sorte que cela fonctionne dans LinuxCNC
-il suffit de définir tous les axes (XYZA), LinuxCNC utilisera alors une
-simple boucle dans HAL pour l'axe Y inutilisé.]footnote:[Une autre 
-façon de le faire fonctionner, est de changer le code
-correspondant et recompiler le logiciel.]
+It is straightforward to do the transformation for a trivial "kins" ('trivkins'
+kinematics) or Cartesian machine provided that there are no omissions in the
+axis letters used.
 
-== Cinématiques non triviales
+It gets a bit more complicated if the machine is missing one or more of the
+axis letters.  The problems of omitted axis letters is addressed by using the
+'coordinates=' module parameter with the trivkins module.  Joint numbers are
+assigned consecutively to each coordinate specified.  A lathe can be described
+with 'coordinates=xz' The joint assignments will then be:
 
-Il peut y avoir un certain nombre de types de configurations de
-machine (robots: puma, scara; hexapodes etc.) Chacun d'eux est mis en
-place en utilisant des articulations linéaires et rotatives. Ces articulations
-ne correspondent pas habituellement avec les coordonnées Cartésiennes,
-cela nécessite une fonction cinématique qui fasse la conversion (en
-fait 2 fonctions: fonction en avant et inverse de la cinématique).
+----
+joints[0] = pos->tran.x
+joints[1] = pos->tran.z
+----
 
-Pour illustrer ce qui précède, nous analyserons une simple cinématique
-appelée bipode (une version simplifiée du tripode, qui est déjà une
-version simplifiée de l'hexapode).
+Use of the 'coordinates=' parameter is recommended for configurations that omit
+axis letters. footnote:[ Historically, the trivkins module did not support the
+'coordinates=' parameter so lathe configs were often configured as XYZ
+machines.  The unused Y axis was configured to 1) home immediately, 2) use a
+simple loopback to connect its position command hal pin to its position
+feedback hal pin, and 3) hidden in gui displays.   Numerous sim configs use
+these methods in order to share common hal files.]
 
-.Définir un bipode[[cap:Bipod-setup]]
+The 'trivkins' kinematics module also allows the same coordinate to be specified
+for more than one joint.  This feature can be useful on machines like a gantry
+having two independent motors for the y coordinate.  Such a machine could use
+'coordinates=xyyz' resulting in joint assignments:
 
-image::images/bipod.png[alt="Définir un bipode"]
+----
+joints[0] = pos->tran.x
+joints[1] = pos->tran.y
+joints[2] = pos->tran.y
+joints[3] = pos->tran.z
+----
 
-Le bipode dont nous parlons est un appareil, composé de deux moteurs
-placés sur un mur, à cet appareil un mobile est suspendu par des fils.
-Les articulations dans ce cas sont les distances entre le mobile et les
-moteurs de l'appareil (nommées AD et BD sur la figure ci-dessus.
+See the trivkins man pages for more information.
 
-La position des moteurs est fixée par convention. Le moteur A est en
-(0,0), qui signifie que sa coordonnée X est 0 et sa coordonnée Y
-également 0. Le moteur B est placé en (Bx, 0), se qui veut dire que sa
-coordonnée X est Bx.
+== Non-trivial kinematics
 
-Notre pointe mobile se trouvera au point D défini par les distances AD
-et BD, et par les coordonnées Cartésiennes Dx, Dy.
+There can be quite a few types of machine setups (robots: puma, scara;
+hexapods etc.). Each of them is set up using linear and rotary joints.
+These joints don't usually match with the Cartesian coordinates,
+therefore we need a kinematics function which does the
+conversion (actually 2 functions: forward and inverse kinematics
+function).
 
-La tâche de la cinématique consistera à transformer les longueurs des
-articulations en (AD, BD) en coordonnées Cartésiennes (Dx, Dy) et
-vice-versa.
+To illustrate the above, we will analyze a simple kinematics called
+bipod (a simplified version of the tripod, which is a simplified
+version of the hexapod).
 
-=== Transformation avant[[sec:Forward-transformation]]
+.Bipod setup
 
-Pour effectuer la transformation de l'espace articulation en espace
-Cartésien nous allons utiliser quelques règles de trigonomètrie (le
-triangle rectangle déterminé par les points (0,0), (Dx,0), (Dx,Dy) et
-le triangle rectangle (Dx,0), (Bx,0) et (Dx,Dy).
+image::images/bipod.png[alt="Bipod setup"]
 
-Nous pouvons voir aisément que *AD^2^=x^2^+y^2^*, de même que *BD^2^=(Bx-x)^2^+y^2^*.
+The Bipod we are talking about is a device that consists of 2 motors
+placed on a wall, from which a device is hung using some wire. The
+joints in this case are the distances from the motors to the device
+(named AD and BD in the figure).
 
-Si nous soustrayons l'un de l'autre nous aurons: 
-*AD^2^-BD^2^=x^2^+y^2^-x^2^+2*x*Bx-Bx^2^-y^2^*
+The position of the motors is fixed by convention. Motor A is in
+(0,0), which means that its X coordinate is 0, and its Y coordinate is
+also 0. Motor B is placed in (Bx, 0), which means that its X coordinate
+is Bx.
 
-et par conséquent: *x=(AD^2^-BD^2^+Bx^2^)/(2*Bx)*
+Our tooltip will be in point D which gets defined by the distances AD
+and BD, and by the Cartesian coordinates Dx, Dy.
 
-De là nous calculons: *y=sqrt(AD^2^-x^2^)*
+The job of the kinematics is to transform from joint lengths (AD, BD)
+to Cartesian coordinates (Dx, Dy) and vice-versa.
 
+=== Forward transformation
 
-Noter que le calcul inclus la racine carrée de la différence, mais
-qu'il n'en résulte pas un nombre réel. Si il n'y a aucune coordonnée
-Cartésienne pour la position de cette articulation, alors la position est
-dite singulière. Dans ce cas, la cinématique inverse retourne -1.
+To transform from joint space into Cartesian space we will use some
+trigonometry rules (the right triangles determined by the points (0,0),
+(Dx,0), (Dx,Dy) and the triangle (Dx,0), (Bx,0) and (Dx,Dy).
 
-Traduction en code:
+We can easily see that:
+image:images/kinematics-math-01.png[align="center"],
+likewise:
+image:images/kinematics-math-02.png[align="center"]
+
+If we subtract one from the other we will get:
+
+image::images/kinematics-math-03.png[align="center"]
+
+and therefore:
+
+image::images/kinematics-math-04.png[align="center"]
+
+From there we calculate:
+
+image::images/kinematics-math-05.png[align="center"]
+
+////////////////////////////////////////////////////////////////////
+we can easily see that latexmath:[$AD^{2}=x^{2}+y^{2}$], likewise
+latexmath:[$BD^{2}=(Bx-x)^{2}+y^{2}$].
+
+If we subtract one from the other we will get:
+
+latexmath::[\[AD^{2}-BD^{2}=x^{2}+y^{2}-x^{2}+2*x*Bx-Bx^{2}-y^{2}\]]
+
+and therefore:
+
+latexmath::[\[x=\frac{AD^{2}-BD^{2}+Bx^{2}}{2*Bx}\]]
+
+From there we calculate:
+
+latexmath::[\[y=\sqrt{AD^{2}-x^{2}}\]]
+////////////////////////////////////////////////////////////////////
+
+Note that the calculation for y involves the square root of a
+difference, which may not result in a real number. If there is no
+single Cartesian coordinate for this joint position, then the position
+is said to be a singularity. In this case, the forward kinematics
+return -1.
+
+Translated to actual code:
+
 ----
 double AD2 = joints[0] * joints[0];
 double BD2 = joints[1] * joints[1];
@@ -161,16 +231,23 @@ pos->tran.y = sqrt(y2);
 return 0;
 ----
 
-=== Transformation inverse[[sec:Inverse-transformation]]
+=== Inverse transformation
 
-La cinématique inverse est beaucoup plus simple dans notre exemple, de
-sorte que nous pouvons l'écrire directement:
+The inverse kinematics is lots easier in our example, as we can write
+it directly:
 
-*AD=sqrt(x^2^+y^2^)*
+image::images/kinematics-math-06.png[align="center"]
 
-*BD=sqrt((Bx-x)^2^+y^2^)*
+image::images/kinematics-math-07.png[align="center"]
 
-ou traduite en code:
+/////////////////////////////////////////////////
+latexmath::[\[AD=\sqrt{x^{2}+y^{2}}\]]
+
+latexmath::[\[BD=\sqrt{(Bx-x)^{2}+y^{2}}\]]
+////////////////////////////////////////////////
+
+or translated to actual code:
+
 ----
 double x2 = pos->tran.x * pos->tran.x;
 double y2 = pos->tran.y * pos->tran.y;
@@ -179,32 +256,55 @@ joints[1] = sqrt((Bx - pos->tran.x)*(Bx - pos->tran.x) + y2);
 return 0;
 ----
 
-== Détails d'implémentation
+== Implementation details
 
-Un module cinématique est implémenté comme un composant de HAL, et il
-est permis d'exporter ses pins et ses paramètres. Il consiste en
-quelques fonctions “C” (par opposition au fonctions de HAL):
+A kinematics module is implemented as a HAL component, and is
+permitted to export pins and parameters. It consists of several “C”
+functions (as opposed to HAL functions):
 
-int kinematicsForward(const double *joint, EmcPose *world, const KINEMATICS_FORWARD_FLAGS *fflags, KINEMATICS_INVERSE_FLAGS *iflags)::
-        Implémente <<sec:Forward-transformation,la fonction cinématique avant>>.
-int kinematicsInverse(const EmcPose * world, double *joints, const KINEMATICS_INVERSE_FLAGS *iflags, KINEMATICS_FORWARD_FLAGS *fflags)::
-        Implémente <<sec:Inverse-transformation,la fonction cinématique inverse>>.
-KINEMATICS_TYPE kinematicsType(void)_::
-        Retourne l'identificateur de type de la cinématique, typiquement
-   _KINEMATICS_BOTH_.
-int kinematicsHome(EmcPose *world, double *joint, KINEMATICS_FORWARD_FLAGS *fflags, KINEMATICS_INVERSE_FLAGS *iflags)::
-   La fonction prise d'origine de la cinématique ajuste tous ses
-   arguments à leur propre valeur à une position d'origine connue. Quand
-   elle est appelée, cette position doit être ajustée, quand elle est
-   connue, comme valeurs initiales, par exemple depuis un fichier INI. Si
-   la prise d'origine de la cinématique peut accepter des points de départ
-   arbitraires, ces valeurs initiales doivent être utilisées.
-int rtapi_app_main(void)::
-void rtapi_app_exit(void)::
-   Il s'agit des fonctions standards d'installation et de la
-   désinstallation des modules RTAPI.
+----
+int kinematicsForward(const double *joint, EmcPose *world,
+const KINEMATICS_FORWARD_FLAGS *fflags,
+KINEMATICS_INVERSE_FLAGS *iflags)
+----
 
-Quand ils sont contenus dans un seul fichier source, les modules de la
-cinématique peuvent être compilés et installés par _comp_. Voir la
-manpage _comp(1)_ pour d'autres informations.
+Implements the forward kinematics function.
+
+----
+int kinematicsInverse(const EmcPose * world, double *joints,
+const KINEMATICS_INVERSE_FLAGS *iflags,
+KINEMATICS_FORWARD_FLAGS *fflags)
+----
+
+Implements the inverse kinematics function.
+
+----
+KINEMATICS_TYPE kinematicsType(void)
+----
+
+Returns the kinematics type identifier, typically 'KINEMATICS_BOTH'.
+
+----
+int kinematicsHome(EmcPose *world, double *joint,
+KINEMATICS_FORWARD_FLAGS *fflags,
+KINEMATICS_INVERSE_FLAGS *iflags)
+----
+
+The home kinematics function sets all its arguments to their proper
+values at the known home position. When called, these should be set,
+when known, to initial values, e.g., from an INI file. If the home
+kinematics can accept arbitrary starting points, these initial values
+should be used.
+
+----
+int rtapi_app_main(void)
+void rtapi_app_exit(void)
+----
+
+These are the standard setup and tear-down functions of RTAPI modules.
+
+When they are contained in a single source file, kinematics modules
+may be compiled and installed by 'halcompile'. See the 'halcompile(1)' manpage or
+the HAL manual for more information.
+
 

@@ -1,102 +1,76 @@
-:lang: fr
-:toc:
+[[cha:gcode-examples]]
 
-= Exemples de fichiers G-Code
+= G Code Examples
 
-Après l'installation de LinuxCNC, plusieurs exemples de fichiers G-code se trouveront
-dans le répertoire /nc_files du dossier d'installation. Seuls les fichiers
-adaptés au type de la machine sont utilisable.
+After you install LinuxCNC several sample files are placed in the
+/nc_files folder. Make sure the sample file is appropriate for your
+machine before running.
 
-== Exemples pour une fraiseuse
+== Mill Examples
 
-=== Fraisage hélicoïdal d'un orifice
+=== Helical Hole Milling
 
-- Nom du fichier: useful-subroutines.ngc
+File Name: useful-subroutines.ngc
 
-- Description: Programme pour usiner une poche ou un alésage avec utilisation
-des paramètres.
+Description: Subroutine for milling a hole using parameters.
 
-=== Rainurage
+=== Slotting
 
-- Nom du fichier: useful-subroutines.ngc
+File Name: useful-subroutines.ngc
 
-- Decription: Programme pour fraiser une rainure avec utilisation des
-paramètres.
+Description: Subroutine for milling a slot using parameters.
 
-.Les différents usinages de l'exemple
+=== Grid Probe
 
-image::images/useful-subroutines-ngc.png[alt="Les différents usinages de l'exemple"]
+File Name: gridprobe.ngc
 
-=== Palpage d'une grille rectangulaire de points
+Description: Rectangular Probing
 
-- Nom du fichier: gridprobe.ngc
+This program repeatedly probes in a regular XY grid and writes the
+probed location to the file 'probe-results.txt' in the same directory
+as the .ini file.
 
-- Description: Relevé d'une grille rectangulaire de points au palpeur.
+=== Smart Probe
 
-Ce programme palpe de manière répétitive, en suivant une grille
-régulière en XY et écrit les points mesurés dans le fichier
-_probe-results.txt_ situé dans le même répertoire que le fichier .ini.
+File Name: smartprobe.ngc
 
-.La grille de palpage
+Description: Rectangular Probing
 
-image::images/gridprobe-ngc.png[alt="La grille de palpage"]
+This program repeatedly probes in a regular XY grid and writes the
+probed location to the file 'probe-results.txt' in the same directory
+as the .ini file. This is improved from the grid probe file.
 
-=== Amélioration du palpage d'une grille rectangulaire de points
+=== Tool Length Probe
 
-- Nom du fichier: smartprobe.ngc
+File Name: tool-length-probe.ngc
 
-- Description: Relevé d'une grille rectangulaire de points au palpeur.
+Description: Tool Length Probing
 
-Ce programme est une amélioration du précédent. Il palpe de manière
-répétitive, en suivant une grille régulière en XY et écrit les points
-mesurés dans le fichier _probe-results.txt_ situé dans le même
-répertoire que le fichier .ini.
+This program shows an example of how to measure tool lengths
+automatically using a switch hooked to the probe input. This is useful
+for machines without tool holders, where the length of a tool is
+different every time it is inserted.
 
-.La grille de palpage plus fine
+=== Hole Probe
 
-image::images/smartprobe-ngc.png[alt="La grille de palpage plus fine"]
+File Name: probe-hole.ngc
 
-=== Mesure de longueur d'outil
+Description: Finding the Center and Diameter of a hole.
 
-- Nom du fichier: tool-lenght-probe.ngc
+The program demonstrates how to find the center of a hole, measure the
+hole diameter and record the results.
 
-- Description: Mesure automatique de la longueur de l'outil.
+=== Cutter Compensation
 
-Ce programme donne un exemple de la mesure automatique de longueur
-d'outil en utilisant un contact raccordé à l'entrée sonde. C'est très
-pratique pour une machine sur laquelle la longueur des outils est
-différente à chaque montage.
+To be added
 
-=== Mesure d'un alésage au palpeur
+== Lathe Examples
 
-- Nom du fichier: probe-hole.ngc
+=== Threading
 
-- Description: Mesure le centre et le diamètre d'un alésage.
+File Name lathe-g76.ngc
 
-Ce programme montre comment trouver le centre d'un alésage, comment
-calculer son diamètre et enregistrer les mesures dans un fichier.
+Description: Facing, threading and parting off.
 
-=== Compensation de rayon d'outil
-
-- Nom du fichier: comp-g1.ngc
-
-- Description: Mouvements d'entrée et de sortie avec la compensation de
-rayon d'outil.
-
-Ce programme démontre la particularité du chemin d'outil sans et avec
-la compensation de rayon d'outil. Le rayon d'outil est pris dans la
-table d'outils.
-
-== Exemples pour un tour
-
-=== Filetage
-
-- Nom du fichier: lathe-g76.ngc
-
-- Description: Dressage, filetage et tronçonnage.
-
-Ce programme donne un exemple de filetage automatique sur un tour avec
-utilisation des paramètres. Il demande quelques adaptations pour fonctionner, ces
-adaptations seront un excellent exercice.
-
+This file shows an example of threading on a lathe using parameters.
 
