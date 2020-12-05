@@ -1,5 +1,14 @@
 
-The latest version of the Hostmot2 firmware register map is available here:
+Docs for the Anything I/O boards are available from Mesa at
+<http://www.mesanet.com>.
 
-    https://github.com/LinuxCNC/hostmot2-firmware/blob/master/src/regmap
+
+The docs for the PLX chipsets used on the PCI Anything I/O boards is
+available gratis but not libre from plxtech.com.
+
+
+Reasonable documentation of EPP parallel port programming is available
+in the moschip 9805 docs here:
+
+    <http://www.moschip.com/data/products/NM9805/Data%20Sheet_9805.pdf>
 
