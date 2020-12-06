@@ -1,36 +1,16 @@
-There are three components to the radius error tolerance for center-format
-arcs.
+This directory consists of snippets of gcode that should be rejected because
+they are not valid.  All files that match the glob '*.ngc' are tested.
+The first line should consist of a ";" followed by the exact English
+error string that the interpreter should show.  This is followed
+by zero or more lines of test gcode.
 
-The "absolute error" is the difference between the radius at the starting
-point and the radius at the ending point.  The "relative error" is the
-absolute error divided by the maximum arc radius.
+An individual file is considered to be a failure if
+ * it is accepted by the interpreter
+ * or the error message does not exactly match the specification
 
-The absolute error threshold for imperial arcs is:
+An individual file is considered to be bad if
+ * it does not contain a parseable error specification
+ * the error message cannot be isolated in the interpreter's output
 
-    2 * 0.001 inch * sqrt(2)
-
-The absolute error threshold for metric arcs is:
-
-    2 * 0.01 mm * sqrt(2)
-
-The relative error threshold for all arcs is 0.001 (0.1%)
-
-An arc fails the radius tolerance test if either of these conditions
-is true:
-
-    * The absolute error is greater than 100 * the absolute error
-      threshold,
-
-    OR
-
-    * The absolute error is greater than the absolute error
-      threshold AND the relative error is greater than the relative
-      error threshold.
-
-
-This yields three error regions:
-
-    r_big < t_abs/t_rel (2.828 inch or 28.28 mm ): r_small > r_big - t_abs
-    r_big < 100 t_abs/t_rel (282.8 inch or 2828 mm): r_small > (1-t_rel) r_big
-    r_big > 100 t_abs/t_rel: r_small > r_big - 100 t_abs
-
+If any file is a failure or is bad, then the test as a whole fails and will
+count as 1 failure in the testsuite.
